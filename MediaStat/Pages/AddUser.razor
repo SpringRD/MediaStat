@@ -1,0 +1,74 @@
+﻿@page "/AddUser"
+@using MediaStat.Data
+@inject LoginService objUserService
+@inject LookupService objLookupService
+@inject NavigationManager navigationManager
+
+@attribute [Authorize]
+
+<h2>Add Account</h2>
+<hr />
+
+<form>
+    <div class="row">
+        <EditForm Model="objUser" OnValidSubmit="CreateUser">
+            <RadzenCard>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <label>First Name</label>
+                <RadzenTextBox @bind-Value="objUser.FirstName"></RadzenTextBox>
+
+                <label>Last Name</label>
+                <RadzenTextBox @bind-Value="objUser.LastName"></RadzenTextBox>
+
+                <label>Username</label>
+                <RadzenTextBox @bind-Value="objUser.Username"></RadzenTextBox>
+
+                <label>Email</label>
+                <RadzenTextBox @bind-Value="objUser.Email"></RadzenTextBox>
+
+                <label>Password</label>
+                <RadzenPassword @bind-Value="objUser.Password"></RadzenPassword>
+
+                <label>IsAdmin</label>
+                <RadzenCheckBox @bind-Value="objUser.IsAdmin"></RadzenCheckBox>
+            </RadzenCard>
+        </EditForm>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@CreateUser" value="Save" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    IEnumerable<LoginRequest> users;
+    LoginRequest objUser = new LoginRequest();
+
+    private string strNewLink = string.Empty;
+
+    protected async Task CreateUser()
+    {
+        objUserService.CreateUser(objUser);
+        navigationManager.NavigateTo("UsersMainPage");
+    }
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("UsersMainPage");
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await Task.Run(() => objUserService.GetAllUsers());
+    }
+
+
+}

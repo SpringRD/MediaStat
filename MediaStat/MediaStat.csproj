@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PackageId>MediaStat</PackageId>
+    <Authors>MediaStat</Authors>
+    <Company>MediaStat</Company>
+    <Product>MediaStat</Product>
+    <AssemblyName>MediaStat</AssemblyName>
+    <RootNamespace>MediaStat</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200522035703_AddAccountTable.cs" />
+    <Compile Remove="Migrations\20200522035703_AddAccountTable.Designer.cs" />
+    <Compile Remove="Migrations\20200524175543_Add_UserTable.cs" />
+    <Compile Remove="Migrations\20200524175543_Add_UserTable.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\background.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\background.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="2.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.ProtectedBrowserStorage" Version="0.1.0-alpha.19521.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Radzen.Blazor" Version="2.9.1" />
+  </ItemGroup>
+
+</Project>

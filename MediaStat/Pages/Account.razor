@@ -1,0 +1,345 @@
+﻿@page "/account"
+@using MediaStat.Data
+@inject AccountService objAccountService
+@inject LookupService objLookupService
+@inject NavigationManager navigationManager
+@inject IJSRuntime JsRuntime;
+
+@attribute [Authorize]
+
+<NavLink class="nav-link" href="AddAccount">
+    <span class="oi oi-plus" area-hidden="true"></span>Add New
+
+</NavLink>
+
+<h1>Account Information</h1>
+
+@if (objAccount == null)
+{
+    <p><em>No accounts available</em></p>
+}
+else
+{
+    <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
+                Data="@accounts" TItem="AccountInfo" RowSelect="@(args => objAccount = args)" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                RowUpdate="@OnUpdateRow" ColumnWidth="200px">
+        @*RowDoubleClick="@(args => OnRowDoubleClick(args))"*@
+        <Columns>
+            <RadzenGridColumn TItem="AccountInfo" Property="ProfileImageURL" Title="ProfileImageURL">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.ProfileImageURL" Style="width:100%; display: block" Name="ProfileImageURL" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Photo" Title="Photo" Sortable="false" Filterable="false">
+                <Template Context="acc">
+                    <RadzenImage Path="@acc.ProfileImageURL" Style="width:200px" />
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="ScreenName" Title="Screen Name">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.ScreenName" Style="width:100%; display: block" Name="ScreenName" />
+                    @*<RadzenRequiredValidator Text="ScreenName is required" Component="ScreenName" Popup="true" />*@
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="ProfileName" Title="Profile Name">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.ProfileName" Style="width:100%; display: block" Name="ProfileName" />
+                    @*<RadzenRequiredValidator Text="ProfileName is required" Component="ScreeProfileNamenName" Popup="true" />*@
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Joined" Title="Joined">
+                <Template Context="data">
+                    @String.Format("{0:d}", data.Joined)
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDatePicker @bind-Value="acc.Joined" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="DateOfBirth" Title="Date Of Birth">
+                <Template Context="data">
+                    @String.Format("{0:d}", data.DateOfBirth)
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDatePicker @bind-Value="acc.DateOfBirth" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Location" Title="Location">
+                <Template Context="acc">
+                    <RadzenDropDown Disabled="true" @bind-Value="acc.Location" Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDropDown @bind-Value="acc.Location" Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Party" Title="Party">
+                <Template Context="acc">
+                    <RadzenDropDown Disabled="true" @bind-Value="acc.Party" Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDropDown @bind-Value="acc.Party" Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="AccountType" Title="AccountType">
+                <Template Context="acc">
+                    <RadzenDropDown Disabled="true" @bind-Value="acc.AccountType" Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDropDown @bind-Value="acc.AccountType" Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Classification1" Title="Classification1">
+                <Template Context="acc">
+                    <RadzenDropDown Disabled="true" @bind-Value="acc.Classification1" Data="@classification1s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDropDown @bind-Value="acc.Classification1" Data="@classification1s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Classification2" Title="Classification2">
+                <Template Context="acc">
+                    <RadzenDropDown Disabled="true" @bind-Value="acc.Classification2" Data="@classification2s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDropDown @bind-Value="acc.Classification2" Data="@classification2s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Description" Title="Description">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.Description" Style="width:100%; display: block" Name="Description" />
+                    <RadzenRequiredValidator Text="Description is required" Component="Description" Popup="true" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="AccountUrl" Title="Account Url ">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.AccountUrl" Style="width:100%; display: block" Name="AccountUrl" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Followers" Title="Followers">
+                <EditTemplate Context="acc">
+                    <RadzenNumeric @bind-Value="acc.Followers" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="Following" Title="Following">
+                <EditTemplate Context="acc">
+                    <RadzenNumeric @bind-Value="acc.Following" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            @*<RadzenGridColumn TItem="AccountInfo" Property="Link" Title="Link">
+            <EditTemplate Context="acc">
+                <RadzenTextBox @bind-Value="acc.Link" Style="width:100%; display: block" Name="Link" />
+            </EditTemplate>
+        </RadzenGridColumn>*@
+
+
+            <RadzenGridColumn TItem="AccountInfo" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="100px">
+                <Template Context="acc">
+                    <RadzenButton Icon="edit" Size="Radzen.ButtonSize.Small" Click="@(args => EditRow(acc))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenButton Icon="save" Size="Radzen.ButtonSize.Small" Click="@((args) => SaveRow(acc))">
+                    </RadzenButton>
+                    <RadzenButton Icon="cancel" Size="Radzen.ButtonSize.Small" ButtonStyle="Radzen.ButtonStyle.Secondary" Click="@((args) => CancelEdit(acc))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="AccountInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                <Template Context="acc">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(acc))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(acc))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="AccountInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                <Template Context="acc">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="edit" Size="Radzen.ButtonSize.Medium" Click="@(args => EditAccount(acc))">
+                    </RadzenButton>
+                </Template>
+                @*<EditTemplate Context="acc">
+                <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(acc))">
+                </RadzenButton>
+            </EditTemplate>*@
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
+
+    <RadzenTabs>
+        <Tabs>
+            <RadzenTabsItem Text="Links">
+
+                <div>
+                    <RadzenLabel Text="Add Link"></RadzenLabel>
+                    <RadzenTextBox MaxLength="50" @bind-value="@strNewLink" />
+                    <RadzenButton Text="Save" Click="@(args => AddLink_Click(@objAccount))"></RadzenButton>
+                </div>
+                <br />
+                <RadzenGrid @ref="myLinkGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
+                            Data="@objAccount.AccountLinks" TItem="AccountLink"
+                            RowUpdate="@OnUpdateLinkRow">
+                    <Columns>
+                        <RadzenGridColumn TItem="AccountLink" Property="LinkDescription" Title="Link Description">
+                            <EditTemplate Context="accLink">
+                                <RadzenTextBox @bind-Value="accLink.LinkDescription" Style="width:100%; display: block" Name="LinkDescription" />
+                                <RadzenRequiredValidator Text="LinkDescription is required" Component="LinkDescription" Popup="true" />
+                            </EditTemplate>
+                        </RadzenGridColumn>
+
+
+                        <RadzenGridColumn TItem="AccountLink" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="100px">
+                            <Template Context="accLink">
+                                <RadzenButton Icon="edit" Size="Radzen.ButtonSize.Small" Click="@(args => EditLinkRow(accLink))">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="accLink">
+                                <RadzenButton Icon="save" Size="Radzen.ButtonSize.Small" Click="@((args) => SaveLinkRow(accLink))">
+                                </RadzenButton>
+                                <RadzenButton Icon="cancel" Size="Radzen.ButtonSize.Small" ButtonStyle="Radzen.ButtonStyle.Secondary" Click="@((args) => CancelEditLink(accLink))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenGridColumn>
+
+                        <RadzenGridColumn TItem="AccountLink" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                            <Template Context="accLink">
+                                <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteLinkRow(accLink))">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="accLink">
+                                <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteLinkRow(accLink))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+}
+
+
+@code {
+    RadzenGrid<AccountInfo> myGrid;
+    RadzenGrid<AccountLink> myLinkGrid;
+
+    IEnumerable<AccountInfo> accounts;
+    AccountInfo objAccount = new AccountInfo();
+
+    IEnumerable<LookupDescription> locations;
+    IEnumerable<LookupDescription> parties;
+    IEnumerable<LookupDescription> accountTypes;
+    IEnumerable<LookupDescription> classification1s;
+    IEnumerable<LookupDescription> classification2s;
+
+    private string strNewLink = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await Task.Run(() => objAccountService.GetAccount());
+        locations = await Task.Run(() => objLookupService.GetLookupDescriptionsByCodeId(1));
+        parties = await Task.Run(() => objLookupService.GetLookupDescriptionsByCodeId(2));
+        accountTypes = await Task.Run(() => objLookupService.GetLookupDescriptionsByCodeId(3));
+        classification1s = await Task.Run(() => objLookupService.GetLookupDescriptionsByCodeId(4));
+        classification2s = await Task.Run(() => objLookupService.GetLookupDescriptionsByCodeId(5));
+
+        objAccount = accounts.FirstOrDefault();
+    }
+
+
+    async Task DeleteRow(AccountInfo acc)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed == true)
+        {
+            objAccountService.DeleteAccountInfo(acc);
+            accounts = await Task.Run(() => objAccountService.GetAccount());
+            //myGrid.Reload();
+        }
+
+    }
+
+
+    void EditRow(AccountInfo acc)
+    {
+        myGrid.EditRow(acc);
+    }
+
+    void OnUpdateRow(AccountInfo acc)
+    {
+        objAccountService.UpdateAccount(acc);
+    }
+
+    void SaveRow(AccountInfo acc)
+    {
+        myGrid.UpdateRow(acc);
+    }
+
+    void CancelEdit(AccountInfo acc)
+    {
+        myGrid.CancelEditRow(acc);
+
+        objAccountService.CancelUpdateAccount(acc);
+    }
+
+    void OnRowDoubleClick(AccountInfo acc)
+    {
+        navigationManager.NavigateTo("EditAccount/" + acc.AccountId.ToString());
+    }
+
+
+    private void AddLink_Click(AccountInfo account)
+    {
+        if (string.IsNullOrWhiteSpace(strNewLink)) return;
+        AccountLink objAccountLink = new AccountLink();
+        objAccountLink.AccountInfoId = account.AccountId;
+        objAccountLink.LinkDescription = strNewLink;
+        account.AccountLinks.Add(objAccountLink);
+        objAccountService.UpdateAccount(account);
+    }
+
+
+    async Task DeleteLinkRow(AccountLink accLink)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed == true)
+        {
+            objAccount.AccountLinks.Remove(accLink);
+            await Task.Run(() => objAccountService.UpdateAccount(objAccount));
+            //objAccountService.UpdateAccount(objAccount);
+
+        }
+    }
+
+    void EditLinkRow(AccountLink accLink)
+    {
+        myLinkGrid.EditRow(accLink);
+    }
+
+    void OnUpdateLinkRow(AccountLink accLink)
+    {
+        objAccountService.UpdateAccount(objAccount);
+    }
+
+    void SaveLinkRow(AccountLink accLink)
+    {
+        myLinkGrid.UpdateRow(accLink);
+    }
+
+    void CancelEditLink(AccountLink accLink)
+    {
+        myLinkGrid.CancelEditRow(accLink);
+
+        objAccountService.CancelUpdateAccountLink(accLink);
+        objAccountService.CancelUpdateAccount(objAccount);
+    }
+
+    void EditAccount(AccountInfo acc)
+    {
+        navigationManager.NavigateTo("EditAccount/" + acc.AccountId.ToString());
+    }
+
+}

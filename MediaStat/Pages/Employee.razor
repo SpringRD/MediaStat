@@ -1,0 +1,68 @@
+﻿@page "/employee"
+@using MediaStat.Data
+@inject EmployeeService objEmpService
+
+<NavLink class="nav-link" href="AddEmployee">
+    <span class="oi oi-plus" area-hidden="true"></span>Add New
+
+</NavLink>
+
+<h1>Employee Information</h1>
+
+@if(objEmp==null)
+{
+    <p><em>Loading....</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Employee Id</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Country</th>
+                <th>City</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var emp in objEmp)
+            {
+            <tr>
+                <td>@emp.EmployeeId</td>
+                <td>@emp.Name</td>
+                <td>@GetGenderDescription(emp.GenderId)</td>
+                <td>@emp.Country</td>
+                <td>@emp.City</td>
+                <td>
+                    <a class="nav-link" href="EditEmployee/@emp.EmployeeId">
+                        <span class="oi oi-pencil" area-hidden="true"></span>Edit
+                    </a>
+                    <a class="nav-link" href="DeleteEmployee/@emp.EmployeeId">
+                        <span class="oi oi-pencil" area-hidden="true"></span>Delete
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<EmployeeInfo> objEmp;
+    List<Gender> objGender;
+    protected override async Task OnInitializedAsync()
+    {
+        objEmp = await Task.Run(() => objEmpService.GetEmployee());
+        objGender = await Task.Run(() => objEmpService.GetGenders());
+    }
+
+    private string GetGenderDescription(int genderID)
+    {
+        var gender = (from s in objGender
+            where s.GenderId ==  genderID
+            select s).FirstOrDefault();
+        return gender.GenderDescription;
+    }
+}

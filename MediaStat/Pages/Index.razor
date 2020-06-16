@@ -1,0 +1,18 @@
+﻿@page "/"
+
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <h1>Welcome @context.User.FindFirst("FirstName").Value</h1>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Sorry you have to login</h1>
+    </NotAuthorized>
+</AuthorizeView>
+
+<div style="background-image: url('../back2.jpg');height: 800px;background-repeat: no-repeat;background-size: cover;/* background-position: center; */">
+
+</div>
+
+

@@ -1,0 +1,170 @@
+﻿@page "/EditAccount/{CurrentID}"
+@using MediaStat.Data
+@inject AccountService objAccountService
+@inject LookupService objLookupService
+@inject NavigationManager navigationManager
+
+@attribute [Authorize]
+
+<h2>Add Account</h2>
+<hr />
+
+<form>
+    <RadzenCard>
+
+        <div class="row">
+
+
+
+            <div class="form-group col-12 col-sm-6 col-md-4 col-lg-3 float-left">
+                <RadzenImage class="img-thumbnail" @bind-Path="@objAccount.ProfileImageURL" style="height: 217px; width: 100%; border-radius: 4px 4px 0px 0px" />
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" style="border-radius: 0px 0px 0px 4px; margin-top: -1px" id="basic-addon3">URL</span>
+                    </div>
+                    <input type="text" class="form-control" style="border-radius: 0px 0px 4px 0px; margin-top: -1px" aria-describedby="basic-addon3" id="basic-url" @bind="@objAccount.ProfileImageURL" />
+                </div>
+            </div>
+
+            <div class="form-group col-12 col-sm-6 col-md-8 col-lg-9">
+
+                <div class="row">
+
+                    <div class="form-group col-12 col-sm-12 col-md-6">
+                        <RadzenLabel class="col-form-label" Component="tbScreenName" Text="Screen Name" />
+                        <RadzenTextBox class="form-control" Name="tbScreenName" @bind-Value="@objAccount.ScreenName" />
+                    </div>
+                    <div class="form-group col-12 col-sm-12 col-md-6">
+                        <RadzenLabel class="col-form-label" Component="tbProfileName" Text="Profile Name" />
+                        <RadzenTextBox class="form-control" Name="tbProfileName" @bind-Value="@objAccount.ProfileName" />
+                    </div>
+
+                    <div class="form-group col-12 col-sm-12 col-md-6">
+                        <RadzenLabel class="col-form-label" Component="dpDOB" Text="Date of birth" />
+                        <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpDOB" @bind-Value="@objAccount.DateOfBirth" DateFormat="dd/MM/yyyy" />
+                    </div>
+                    <div class="form-group col-md-6 d-sm-none d-md-inline">
+                        <RadzenLabel class="col-form-label" Component="dpJoinDate" Text="Join Date" />
+                        <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpJoinDate" @bind-Value="@objAccount.Joined" DateFormat="dd/MM/yyyy" />
+                    </div>
+
+                    <div class="form-group col-md-6 d-sm-none d-md-inline">
+                        <RadzenLabel class="col-form-label" Component="cmbLocation" Text="Location" />
+                        <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+                    </div>
+                    <div class="form-group col-md-6 d-sm-none d-md-inline">
+                        <RadzenLabel class="col-form-label" Component="cmbParty" Text="Party" />
+                        <RadzenDropDown class="form-control" Name="cmbParty" TValue="int?" @bind-Value="@objAccount.Party" Placeholder="Select..." Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="form-group col-12 col-sm-12 d-sm-inline d-md-none">
+                <RadzenLabel class="col-form-label" Component="dpJoinDate2" Text="Join Date" />
+                <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpJoinDate2" @bind-Value="@objAccount.Joined" DateFormat="dd/MM/yyyy" />
+            </div>
+
+            <div class="form-group col-12 col-sm-12 d-sm-inline d-md-none">
+                <RadzenLabel class="col-form-label" Component="cmbLocation2" Text="Location" />
+                <RadzenDropDown class="form-control" Name="cmbLocation2" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+            </div>
+            <div class="form-group col-12 col-sm-12 col-md-6 d-sm-inline d-md-none">
+                <RadzenLabel class="col-form-label" Component="cmbParty2" Text="Party" />
+                <RadzenDropDown class="form-control" Name="cmbParty2" TValue="int?" @bind-Value="@objAccount.Party" Placeholder="Select..." Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+            </div>
+
+
+            <div class="form-group col-12 col-md-4">
+                <RadzenLabel class="col-form-label" Component="cmbAccountType" Text="Account Type" />
+                <RadzenDropDown class="form-control" Name="cmbAccountType" TValue="int?" @bind-Value="@objAccount.AccountType" Placeholder="Select..." Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+            </div>
+            <div class="form-group col-12 col-md-8">
+                <RadzenLabel class="col-form-label" Component="tbAccountUrl" Text="Account Url" />
+                <RadzenTextBox class="form-control" Name="tbAccountUrl" @bind-Value="@objAccount.AccountUrl" />
+            </div>
+
+
+
+            <div class="form-group col-12 col-sm-6 col-md-4">
+                <RadzenLabel class="col-form-label" Component="cmbAccountClassification1" Text="Account Classification1" />
+                <RadzenDropDown class="form-control" Name="cmbAccountClassification1" TValue="int?" @bind-Value="@objAccount.Classification1" Placeholder="Select..." Data="@classification1s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+            </div>
+            <div class="form-group col-12 col-sm-6 col-md-4">
+                <RadzenLabel class="col-form-label" Component="cmbAccountClassification2" Text="Account Classification2" />
+                <RadzenDropDown class="form-control" Name="cmbAccountClassification2" TValue="int?" @bind-Value="@objAccount.Classification2" Placeholder="Select..." Data="@classification2s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+            </div>
+            <div class="w-100" />
+
+
+            <div class="form-group col-12 col-sm-6 col-md-4">
+                <RadzenLabel class="col-form-label" Component="tbFollowers" Text="Followers" />
+                <RadzenNumeric class="form-control" Name="tbFollowers" TValue="int?" Step="1" @bind-Value="@objAccount.Followers" />
+            </div>
+            <div class="form-group col-12 col-sm-6 col-md-4">
+                <RadzenLabel class="col-form-label" Component="tbFollowing" Text="Following" />
+                <RadzenNumeric class="form-control" Name="tbFollowing" TValue="int?" Step="1" @bind-Value="@objAccount.Following" />
+            </div>
+            <div class="w-100" />
+
+            <div class="form-group col-12 col-md-12">
+                <RadzenLabel Component="tbDescription" Text="Description" />
+                <RadzenTextArea class="form-control" Name="tbDescription" @bind-Value="@objAccount.Description" Rows="3" />
+            </div>
+
+        </div>
+
+
+        <div class="row ">
+            <div class="col">
+                <input type="button" class="btn btn-primary" @onclick="@UpdateEmployee" value="Save" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </RadzenCard>
+
+</form>
+
+@code {
+    [Parameter]
+    public string CurrentID { get; set; }
+
+    //IEnumerable<AccountInfo> accounts;
+    AccountInfo objAccount = new AccountInfo();
+
+    IEnumerable<LookupDescription> locations;
+    IEnumerable<LookupDescription> parties;
+    IEnumerable<LookupDescription> accountTypes;
+    IEnumerable<LookupDescription> classification1s;
+    IEnumerable<LookupDescription> classification2s;
+
+
+    protected void UpdateEmployee()
+    {
+        objAccountService.UpdateAccount(objAccount);
+        navigationManager.NavigateTo("Account");
+    }
+
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("Account");
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        objAccount = await Task.Run(() => objAccountService.GetAccountById(int.Parse(CurrentID)));
+        await Task.Run(() => objLookupService.FillAllLookups());
+        //objLookupService.FillAllLookups();
+        locations = objLookupService.Locations;
+        parties = objLookupService.Parties;
+        accountTypes = objLookupService.AccountTypes;
+        classification1s = objLookupService.Classification1s;
+        classification2s = objLookupService.Classification2s;
+
+    }
+}

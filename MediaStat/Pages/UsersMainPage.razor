@@ -1,0 +1,152 @@
+﻿@page "/usersmainpage"
+@using MediaStat.Data
+@inject LoginService objUserService
+@inject LookupService objLookupService
+@inject NavigationManager navigationManager
+@inject IJSRuntime JsRuntime;
+
+@attribute [Authorize]
+
+<NavLink class="nav-link" href="AddUser">
+    <span class="oi oi-plus" area-hidden="true"></span>Add New
+
+</NavLink>
+
+<h1>Users Information</h1>
+
+@if (users == null)
+{
+    <p><em>No users available</em></p>
+}
+else
+{
+    <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
+                Data="@users" TItem="LoginRequest" RowSelect="@(args => objUser = args)" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                RowUpdate="@OnUpdateRow">
+        @*RowDoubleClick="@(args => OnRowDoubleClick(args))"*@
+        <Columns>
+            <RadzenGridColumn Width="400" TItem="LoginRequest" Property="Email" Title="Email">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.Email" Style="width:100%; display: block" Name="Email" />
+                    <RadzenRequiredValidator Text="Email is required" Component="Email" Popup="true" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn Width="400" TItem="LoginRequest" Property="FirstName" Title="First Name">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.FirstName" Style="width:100%; display: block" Name="FirstName" />
+                    <RadzenRequiredValidator Text="First Name is required" Component="FirstName" Popup="true" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn Width="400" TItem="LoginRequest" Property="LastName" Title="Last Name">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.LastName" Style="width:100%; display: block" Name="LastName" />
+                    <RadzenRequiredValidator Text="Last Name is required" Component="LastName" Popup="true" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn Width="400" TItem="LoginRequest" Property="Username" Title="Username">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.Username" Style="width:100%; display: block" Name="Username" />
+                    <RadzenRequiredValidator Text="Username is required" Component="Username" Popup="true" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn Width="400" TItem="LoginRequest" Property="Password" Title="Password">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.Password" Style="width:100%; display: block" Name="Password" />
+                    <RadzenRequiredValidator Text="Password is required" Component="Password" Popup="true" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn Width="400" TItem="LoginRequest" Property="IsAdmin" Title="IsAdmin">
+                <Template Context="data">
+                   <RadzenCheckBox @bind-Value="data.IsAdmin"></RadzenCheckBox>
+                </Template>
+                @*<EditTemplate Context="acc">
+                    <RadzenCheckBox @bind-Value="acc.IsAdmin" Style="width:100%; display: block" Name="IsAdmin" />
+                </EditTemplate>*@
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="LoginRequest" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="100px">
+                <Template Context="acc">
+                    <RadzenButton Icon="edit" Size="Radzen.ButtonSize.Small" Click="@(args => EditRow(acc))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenButton Icon="save" Size="Radzen.ButtonSize.Small" Click="@((args) => SaveRow(acc))">
+                    </RadzenButton>
+                    <RadzenButton Icon="cancel" Size="Radzen.ButtonSize.Small" ButtonStyle="Radzen.ButtonStyle.Secondary" Click="@((args) => CancelEdit(acc))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="LoginRequest" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                <Template Context="acc">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(acc))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(acc))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+
+        </Columns>
+    </RadzenGrid>
+
+}
+
+
+@code {
+    RadzenGrid<LoginRequest> myGrid;
+
+    IEnumerable<LoginRequest> users;
+    LoginRequest objUser = new LoginRequest();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await Task.Run(() => objUserService.GetAllUsers());
+        objUser = users.FirstOrDefault();
+    }
+
+
+    async Task DeleteRow(LoginRequest acc)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>
+            ("confirm", "Are you sure?");
+        if (confirmed == true)
+        {
+            objUserService.DeleteEmpInfo(acc);
+            users = await Task.Run(() => objUserService.GetAllUsers());
+            //myGrid.Reload();
+        }
+
+    }
+
+
+    void EditRow(LoginRequest acc)
+    {
+        myGrid.EditRow(acc);
+    }
+
+    void OnUpdateRow(LoginRequest acc)
+    {
+        objUserService.UpdateUser(acc);
+    }
+
+    void SaveRow(LoginRequest acc)
+    {
+        myGrid.UpdateRow(acc);
+    }
+
+    void CancelEdit(LoginRequest acc)
+    {
+        myGrid.CancelEditRow(acc);
+
+        objUserService.CancelUpdateUser(acc);
+    }
+
+    void OnRowDoubleClick(LoginRequest acc)
+    {
+        navigationManager.NavigateTo("EditAccount/" + acc.LoginRequestId.ToString());
+    }
+
+}

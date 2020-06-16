@@ -1,0 +1,90 @@
+﻿@page "/auth/login"
+
+@layout AuthLayout
+
+@using MediaStat.Data
+@inject EmployeeService objEmpService
+@inject NavigationManager navigationManager
+@inject ILocalStorageService storageService
+@inject LoginService loginService
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject Data.Services.AppState appState
+
+
+
+
+<div class="row">
+    <div class="col-12">
+        <h2>Login to your account</h2>
+        <EditForm Model="model" OnValidSubmit="LoginUser">
+            <RadzenCard>
+                <AlertMessage Message="@message" MessageType="@messageType"></AlertMessage>
+
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <label>Email</label>
+                <RadzenTextBox @bind-Value="model.Email"></RadzenTextBox>
+
+                <label>Password</label>
+                <RadzenPassword @bind-Value="model.Password"></RadzenPassword>
+
+                <hr />
+
+                <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Login"
+                              ButtonStyle="Radzen.ButtonStyle.Primary" class="btn-block mr-2"
+                              Disabled="isBusy" />
+                @*<RadzenButton ButtonType="Radzen.ButtonType.Button" Text="Register"
+                    ButtonStyle="Radzen.ButtonStyle.Secondary" class="btn-block mr-2"
+                    Disabled="isBusy" Click="GoToRegister" />*@
+            </RadzenCard>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    LoginRequest model = new LoginRequest();
+
+    bool isBusy = false;
+    string message = string.Empty;
+    AlertMessageType messageType = AlertMessageType.Success;
+
+
+    public async Task LoginUser()
+    {
+        isBusy = true;
+        //var result = await authService.LoginUserAsync(model);
+        var result = loginService.GetUserByEmailAndPassword(model.Email, model.Password);
+        if (!(result == null) && result.LoginRequestId != 0)
+        {
+            var userInfo = new LocalUserInfo()
+            {
+                AccessToken = result.AccessToken,
+                Email = result.Email,
+                FirstName = result.FirstName,
+                LastName = result.LastName,
+                Id = System.Security.Claims.ClaimTypes.NameIdentifier,
+                IsAdmin = result.IsAdmin,
+            };
+
+            await storageService.SetItemAsync("User", userInfo);
+            await authenticationStateProvider.GetAuthenticationStateAsync();
+
+            navigationManager.NavigateTo("/");
+            //Data.Services.AppState.PutData(userInfo.Email, userInfo.IsAdmin);
+        }
+        else
+        {
+            message = "Not Found";
+            messageType = AlertMessageType.Error;
+        }
+        isBusy = false;
+    }
+
+    void GoToRegister()
+    {
+        navigationManager.NavigateTo("/auth/register");
+    }
+
+}
+

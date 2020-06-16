@@ -1,0 +1,200 @@
+﻿@page "/GridTest"
+@using MediaStat.Data
+@inject LookupService objLookupService
+@inject NavigationManager navigationManager
+@inject IJSRuntime JsRuntime;
+
+
+@attribute [Authorize]
+
+<h3>Managing lookups</h3>
+@if (lookupCodes == null)
+{
+    <p><em>Loading....</em></p>
+}
+else
+{
+    <div class="row float-left col-4">
+        <div class="form-group col-4">
+            <RadzenLabel class="col-form-label" Component="tbLookupCode" Text="Lookup Code: " />
+        </div>
+        <div class="form-group col-4 float-left">
+            <RadzenDropDown TValue="@int" Change="@(args => GetDescriptionsByCodeId(args))"
+                            Placeholder="Select..." Data="@(lookupCodes.Select(c=> new { LookupCodeId = c.LookupCodeId ,LookupCodeDescription=c.LookupCodeDescription}).Distinct().AsQueryable())"
+                            TextProperty="LookupCodeDescription" ValueProperty="LookupCodeId" />
+        </div>
+        @*<p><em>LookupCode:  </em></p>
+            <RadzenDropDown TValue="@int" Change="@(args => GetDescriptionsByCodeId(args))"
+                            Placeholder="Select..." Data="@(lookupCodes.Select(c=> new { LookupCodeId = c.LookupCodeId ,LookupCodeDescription=c.LookupCodeDescription}).Distinct().AsQueryable())"
+                            TextProperty="LookupCodeDescription" ValueProperty="LookupCodeId" />*@
+
+    </div>
+}
+
+@if (lookupDescriptions == null)
+{
+    @*<p><em>Loading....</em></p>*@
+}
+else
+{
+    @*<RadzenDropDown TValue="@LookupDescription"
+        Placeholder="Select..." Data="@(lookupDescriptions.Select(c=> new { LookupDescriptionId = c.LookupDescriptionId ,LookupDescriptionDetail=c.LookupDescriptionDetail}).Distinct().AsQueryable())"
+        TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />*@
+    <br />
+
+    <div class="float-left">
+        <p><em>Lookup Details</em></p>
+        <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="10" AllowSorting="true"
+                    Data="@lookupDescriptions" TItem="LookupDescription" RowUpdate="@OnUpdateRow">
+            <Columns>
+                <RadzenGridColumn Width="200px" TItem="LookupDescription" Property="LookupDescriptionDetail" Title="Lookup Description">
+                    <EditTemplate Context="acc">
+                        <RadzenTextBox @bind-Value="acc.LookupDescriptionDetail" Style="width:100%; display: block" Name="Lookup Description" />
+                        @*<RadzenRequiredValidator Text="Lookup Description is required" Component="LookupDescription" Popup="true" />*@
+                    </EditTemplate>
+                </RadzenGridColumn>
+
+                <RadzenGridColumn TItem="LookupDescription" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="100px">
+                    <Template Context="lkp">
+                        <RadzenButton Icon="edit" Size="Radzen.ButtonSize.Small" Click="@(args => EditRow(lkp))">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="lkp">
+                        <RadzenButton Icon="save" Size="Radzen.ButtonSize.Small" Click="@((args) => SaveRow(lkp))">
+                        </RadzenButton>
+                        <RadzenButton Icon="cancel" Size="Radzen.ButtonSize.Small" ButtonStyle="Radzen.ButtonStyle.Secondary" Click="@((args) => CancelEdit(lkp))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenGridColumn>
+
+                <RadzenGridColumn TItem="LookupDescription" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                    <Template Context="lkp">
+                        <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(lkp))">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="lkp">
+                        <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(lkp))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenGridColumn>
+
+            </Columns>
+        </RadzenGrid>
+        <br />
+        <br />
+
+    </div>
+    <div>
+        <RadzenLabel Text="Add Lookup"></RadzenLabel>
+        <RadzenTextBox MaxLength="50" @bind-value="@strNewLookup" Change="@TextBoxChanged" />
+
+        <RadzenButton Text="Save" Visible="@blnVisible" Click="@AddLookup_Click"></RadzenButton>
+
+
+    </div>
+
+}
+
+
+
+@code {
+
+    RadzenGrid<LookupDescription> myGrid;
+
+    List<LookupCode> lookupCodes;
+    IEnumerable<LookupDescription> lookupDescriptions;
+    IEnumerable<LookupDescription> allLookupDescriptions;
+    //List<LookupDescription> filteredLookupDescriptions;
+    private string strNewLookup = string.Empty;
+    bool blnVisible = true;
+    int selectedLookupId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        lookupCodes = await Task.Run(() => objLookupService.GetLookupCodes());
+        allLookupDescriptions = await Task.Run(() => objLookupService.GetLookupDescriptions());
+    }
+
+    private void GetDescriptionsByCodeId(object lookupCode)
+    {
+        selectedLookupId = (int)lookupCode;
+        lookupDescriptions = from s in allLookupDescriptions
+                             where s.LookupCodeId == selectedLookupId//((LookupCode)lookupCode).LookupCodeId
+                             select s;
+        StateHasChanged();
+        myGrid.FirstPage();
+    }
+
+    private void TextBoxChanged()
+    {
+        if (string.IsNullOrWhiteSpace(strNewLookup))
+        {
+            blnVisible = false;
+        }
+        else
+        {
+            blnVisible = true;
+        }
+        StateHasChanged();
+    }
+
+    private async Task AddLookup_Click()
+    {
+        if (string.IsNullOrWhiteSpace(strNewLookup)) return;
+        LookupDescription objLookupDescription = new LookupDescription();
+        objLookupDescription.LookupCodeId = selectedLookupId;
+        objLookupDescription.LookupDescriptionDetail = strNewLookup;
+        objLookupService.CreateLookupDetail(objLookupDescription);
+        strNewLookup = string.Empty;
+        allLookupDescriptions = await Task.Run(() => objLookupService.GetLookupDescriptions());
+        GetDescriptionsByCodeId(selectedLookupId);
+    }
+
+
+    void EditRow(LookupDescription lkp)
+    {
+        myGrid.EditRow(lkp);
+    }
+
+    void OnUpdateRow(LookupDescription lkp)
+    {
+        //LookupCode lkpCode = objLookupService.GetLookupCodeByCodeId(lkp.LookupCodeId);
+        //objLookupService.UpdateLookupDescription(lkpCode);
+
+        objLookupService.UpdateLookupDescription(lkp);
+        allLookupDescriptions = objLookupService.GetLookupDescriptions();
+        GetDescriptionsByCodeId(selectedLookupId);
+    }
+
+    void SaveRow(LookupDescription lkp)
+    {
+        myGrid.UpdateRow(lkp);
+    }
+
+    void CancelEdit(LookupDescription lkp)
+    {
+        myGrid.CancelEditRow(lkp);
+
+        objLookupService.CancelUpdateLookupDescription(lkp);
+        LookupCode lkpCode = objLookupService.GetLookupCodeByCodeId(lkp.LookupCodeId);
+        objLookupService.CancelUpdateLookupCode(lkpCode);
+    }
+
+    async Task DeleteRow(LookupDescription lkp)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed == true)
+        {
+            //LookupCode lkpCode = objLookupService.GetLookupCodeByCodeId(lkp.LookupCodeId);
+            //lkpCode.LookupDescriptions.Remove(lkp);
+
+
+
+            objLookupService.DeleteLookupDescription(lkp);
+            allLookupDescriptions = objLookupService.GetLookupDescriptions();
+            GetDescriptionsByCodeId(selectedLookupId);
+
+        }
+    }
+
+}

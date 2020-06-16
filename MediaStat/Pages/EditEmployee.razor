@@ -1,0 +1,81 @@
+﻿@page "/EditEmployee/{CurrentID}"
+@using MediaStat.Data
+@inject EmployeeService objEmpService
+@inject NavigationManager navigationManager
+
+<h2>Update Employee</h2>
+<hr />
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <input for="Name" class="form-control" @bind="@objEmp.EmployeeId" />
+            </div>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input form="Name" class="form-control" @bind="@objEmp.Name" />
+            </div>
+            @*<div class="form-group">
+                    <label for="Gender" class="control-label">Gender</label>
+                    <select @bind="@objEmp.Gender" class="form-control">
+                        <option value="">--Select Gender--</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>*@
+            @if (genders == null)
+            {
+                <p><em>Loading....</em></p>
+            }
+            else
+            {
+                <RadzenDropDown TValue="int" @bind-Value="@objEmp.GenderId" Placeholder="Select..." Data="@genders" TextProperty="GenderDescription" ValueProperty="GenderId" />
+            }
+            <div class="form-group">
+                <label for="Country" class="control-label">Country</label>
+                <input form="Country" class="form-control" @bind="@objEmp.Country" />
+            </div>
+            <div class="form-group">
+                <label for="City" class="control-label">City</label>
+                <input form="City" class="form-control" @bind="@objEmp.City" />
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@UpdateEmployee" value="Edit" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public string CurrentID { get; set; }
+
+    EmployeeInfo objEmp = new EmployeeInfo();
+    List<Gender> genders;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        objEmp = await Task.Run(() => objEmpService.GetEmployeeById(Convert.ToInt32(CurrentID)));
+        genders = await Task.Run(() => objEmpService.GetGenders());
+    }
+
+    protected void UpdateEmployee()
+    {
+        objEmpService.UpdateEmployee(objEmp);
+        navigationManager.NavigateTo("Employee");
+    }
+
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("Employee");
+    }
+}
