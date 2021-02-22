@@ -1,0 +1,300 @@
+﻿@page "/SearchPage"
+
+@using MediaStat.Data
+@using Microsoft.Data.SqlClient
+@using System.Data
+
+@inject NavigationManager navigationManager
+
+<h3>SearchPage</h3>
+<br />
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <RadzenLabel class="col-form-label" Text="AccountName" />
+        </div>
+        <div class="col-md-4">
+            <RadzenTextBox class="form-control" @bind-Value="strAccountName" Name="tbAccountName" />
+        </div>
+
+        <div class="col-md-2">
+            <RadzenLabel class="col-form-label" Text="Hashtag" />
+        </div>
+        <div class="col-md-4">
+            <RadzenTextBox class="form-control" @bind-Value="strHashtag" Name="tbHashtag" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <RadzenLabel class="col-form-label" Text="Mention" />
+        </div>
+        <div class="col-md-4">
+            <RadzenTextBox class="form-control" @bind-Value="strMention" Name="tbMention" />
+        </div>
+
+        <div class="col-md-2">
+            <RadzenLabel class="col-form-label" Text="Tweet Date" />
+        </div>
+        <div class="col-md-4">
+            <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpDOB" @bind-Value="@strTweetDate" DateFormat="dd/MM/yyyy" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <RadzenLabel class="col-form-label" Text="FreeText" />
+        </div>
+        <div class="col-md-10">
+            <RadzenTextBox class="form-control" @bind-Value="@strFullText" Name="tbFreeText" />
+        </div>
+    </div>
+</div>
+<br />
+<div class="container">
+    <input type="button" class="col-md-12 mx-auto btn-primary" @onclick="@SearchForTweets" value="Search" />
+</div>
+
+<br />
+<br />
+
+<div class="col-lg-12 control-section">
+    <div class="content-wrapper">
+        <div class="row">
+            @if (tweets == null)
+        {
+            <p><em>No tweets available</em></p>
+        }
+        else
+        {
+            <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" AllowTextWrap="true"
+                        Data="@tweets" TItem="TweetInfo" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive">
+                <Columns>
+                    <RadzenGridColumn TItem="TweetInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                        <Template Context="twt">
+                            <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="link" Size="Radzen.ButtonSize.Medium" Click="@(args => OpenTweet(twt))">
+                            </RadzenButton>
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="TweetInfo" Property="AccountName" Title="Account Name">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.AccountName)
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="TweetInfo" Property="ScreenName" Title="Screen Name">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.ScreenName)
+                        </Template>
+                    </RadzenGridColumn>
+                    @*<RadzenGridColumn TItem="TweetInfo" @bind-Value="strHashtag" Property="Hashtag" Title="Hashtag"></RadzenGridColumn>
+                <RadzenGridColumn TItem="TweetInfo" @bind-Value="strMention" Property="Mention" Title="Mention"></RadzenGridColumn>*@
+                    <RadzenGridColumn TItem="TweetInfo" Property="TweetDate" Title="Tweet Date">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.TweetDate)
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="TweetInfo" Property="FullText" Title="Full Text">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.FullText)
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="TweetInfo" Property="LikesCount" Title="Likes Count">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.LikesCount)
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="TweetInfo" Property="RetweetCount" Title="Retweets Count">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.RetweetCount)
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="TweetInfo" Property="CommentsCount" Title="Comments Count">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.CommentsCount)
+                        </Template>
+                    </RadzenGridColumn>
+
+                </Columns>
+            </RadzenGrid>
+                    }
+        </div>
+    </div>
+</div>
+
+
+    @code {
+
+    string value;
+    string strHashtag;
+    string strAccountName;
+    DateTime strTweetDate;
+    string strMention;
+    string strFullText;
+
+    string _myConnectionString = MyAppData.MyConnectionString;
+
+    RadzenGrid<TweetInfo> myGrid;
+    IEnumerable<TweetInfo> tweets;
+    System.Data.DataTable dtTweets = new System.Data.DataTable();
+
+    public class TweetInfo
+    {
+        public string AccountName;
+        public string FullText;
+        public string Hashtag;
+        public string Mention;
+        public int LikesCount;
+        public int RetweetCount;
+        public int CommentsCount;
+        public string TweetDate;
+        public string ScreenName;
+        public string TweetSpecialId;
+
+    }
+
+    protected void SearchForTweets()
+    {
+        string strQuery = "SELECT [TweetMain].[AccountId],[FullText],[SpecialText],[TweetSpecialId],[LikesCount],[RetweetCount],[CommentsCount],A1.ProfileName,A1.ScreenName,CONVERT(VARCHAR,[TweetDateDim].DayDate,103) AS DayDate FROM [MediaStat].[dbo].[TweetMain] inner join [dbo].[TweetDateDim] on [TweetMain].DateId = [TweetDateDim].Id inner join [dbo].[Accounts] A1 on  [TweetMain].[AccountId] = A1.AccountId where ";
+        int intAndCounter = 0;
+
+
+        if (!string.IsNullOrWhiteSpace(strFullText))
+        {
+            strQuery += "contains (TweetMain.*,'" + strFullText + "') ";
+            intAndCounter += 1;
+        }
+
+        if (!string.IsNullOrWhiteSpace(strHashtag))
+        {
+            if (intAndCounter > 0)
+            {
+                strQuery += "and contains (TweetMain.*,'" + strHashtag + "') ";
+            }
+            else
+            {
+                strQuery += "contains (TweetMain.*,'" + strHashtag + "') ";
+                intAndCounter += 1;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(strMention))
+        {
+            if (intAndCounter > 0)
+            {
+                strQuery += "and contains (TweetMain.*,'" + strMention + "') ";
+            }
+            else
+            {
+                strQuery += "contains (TweetMain.*,'" + strMention + "') ";
+                intAndCounter += 1;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(strAccountName))
+        {
+            if (intAndCounter > 0)
+            {
+                strQuery += "and A1.ProfileName = '" + strAccountName + "' ";
+            }
+            else
+            {
+                strQuery += "A1.ProfileName = '" + strAccountName + "' ";
+                intAndCounter += 1;
+            }
+        }
+
+        //if (!string.IsNullOrWhiteSpace(strTweetDate.ToString()) || strTweetDate.ToString().CompareTo("1/1/0001 12:00:00 AM") !=0)
+        if (strTweetDate.ToString().CompareTo("1/1/0001 12:00:00 AM") != 0)
+        {
+            if (intAndCounter > 0)
+            {
+                strQuery += "and [TweetDateDim].DayDate = '" + strTweetDate + "' ";
+            }
+            else
+            {
+                strQuery += "[TweetDateDim].DayDate = '" + strTweetDate + "' ";
+                intAndCounter += 1;
+            }
+        }
+
+        _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
+        if (intAndCounter > 0)
+        {
+            dtTweets.Clear();
+
+            SqlConnection cnn = new SqlConnection(_myConnectionString);
+            SqlCommand cmd = new SqlCommand(strQuery, cnn);
+
+            cnn.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+
+            //tweets = ExecuteReader<TweetInfo>(strQuery, _myConnectionString);
+
+            dtTweets.Load(dr);
+            tweets = ConvertToIEnumerable(dtTweets);
+
+            //cmd.ExecuteNonQuery();
+            cnn.Close();
+        }
+
+    }
+
+    private IEnumerable<TweetInfo> ConvertToIEnumerable(DataTable dataTable)
+    {
+        foreach (DataRow row in dataTable.Rows)
+        {
+            yield return new TweetInfo
+            {
+                AccountName = row["ProfileName"].ToString(),
+                FullText = row["FullText"].ToString(),
+                TweetDate = row["DayDate"].ToString(),
+                LikesCount = Convert.ToInt32(row["LikesCount"]),
+                RetweetCount = Convert.ToInt32(row["RetweetCount"]),
+                CommentsCount = Convert.ToInt32(row["CommentsCount"]),
+                ScreenName = row["ScreenName"].ToString(),
+                TweetSpecialId = row["TweetSpecialId"].ToString(),
+            };
+        }
+
+    }
+
+    public IEnumerable<TweetInfo> ExecuteReader<TweetInfo>(string query, string strConnectionString)
+    {
+        try
+        {
+            return executeReader<TweetInfo>(query, strConnectionString);
+        }
+        catch (Exception ex)
+        {
+            // your handling code here
+        }
+        return null;
+    }
+
+    private IEnumerable<TweetInfo> executeReader<TweetInfo>(string query, string strConnectionString)
+    {
+        // same code as you have above in your example
+
+        using (SqlConnection cn = new SqlConnection(strConnectionString))
+        {
+            cn.Open();
+            using (SqlCommand cmd = new SqlCommand(query, cn))
+            {
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return (TweetInfo)reader[0];
+                    }
+                }
+            }
+        }
+    }
+
+    void OpenTweet(TweetInfo tweet)
+    {
+        navigationManager.NavigateTo("https://twitter.com/" + tweet.ScreenName.ToString() + "/status/" + tweet.TweetSpecialId.ToString());
+    }
+
+
+    }

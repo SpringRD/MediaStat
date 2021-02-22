@@ -1,8 +1,11 @@
 ﻿@page "/EditAccount/{CurrentID}"
 @using MediaStat.Data
+@using Microsoft.Data.SqlClient
+@using LinqToTwitter;
 @inject AccountService objAccountService
 @inject LookupService objLookupService
 @inject NavigationManager navigationManager
+@inject IJSRuntime JsRuntime;
 
 @attribute [Authorize]
 
@@ -49,8 +52,10 @@
                     </div>
 
                     <div class="form-group col-md-6 d-sm-none d-md-inline">
-                        <RadzenLabel class="col-form-label" Component="cmbLocation" Text="Location" />
-                        <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
+                        @*<RadzenLabel class="col-form-label" Component="cmbLocation" Text="Location" />
+                            <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />*@
+                        <RadzenLabel class="col-form-label" Component="tbLocationDescription" Text="Location" />
+                        <RadzenTextBox class="form-control" Name="tbLocationDescription" @bind-Value="@objAccount.LocationDescription" />
                     </div>
                     <div class="form-group col-md-6 d-sm-none d-md-inline">
                         <RadzenLabel class="col-form-label" Component="cmbParty" Text="Party" />
@@ -120,6 +125,10 @@
             <div class="col">
                 <input type="button" class="btn btn-primary" @onclick="@UpdateEmployee" value="Save" />
                 <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+                @if (!(string.IsNullOrEmpty(objAccount.SpecialAccountId) && string.IsNullOrEmpty(objAccount.ScreenName)))
+                {
+                    <input type="button" class="btn btn-primary" @onclick="@((args) => UpdateProfileData(objAccount.SpecialAccountId,objAccount.ScreenName))" value="Update" />
+                }
             </div>
         </div>
     </RadzenCard>
@@ -167,4 +176,103 @@
         classification2s = objLookupService.Classification2s;
 
     }
+
+    public async Task<string> UpdateProfileData(string id, string screenName)
+    {
+        string _myConnectionString = MyAppData.MyConnectionString;
+        string strQuery;
+        ulong longID = 0;
+
+        // var auth = DoSingleUserAuth();
+        var auth = new ApplicationOnlyAuthorizer
+        {
+            CredentialStore = new InMemoryCredentialStore()
+            {
+                ConsumerKey = "HYMjzOjCUQvDmRxBI8JUmpFdk",
+                ConsumerSecret = "JQxInK1ZSf1eeILr7jLwnAO8FwMWPXuCX22ZXK0S2463LeExGR"
+            }
+        };
+
+        await auth.AuthorizeAsync();
+
+        //List<string> names = new List<string>() {"naem1","namne2" };
+        var twitterCtx = new TwitterContext(auth) { ReadWriteTimeout = 300 };
+        try
+        {
+            if(!string.IsNullOrEmpty(id))
+            {
+                longID = (ulong)long.Parse(id);
+            }
+
+            var userResponse =
+             (from user in twitterCtx.User
+              where user.Type == UserType.Show &&
+              (user.ScreenName == screenName ||
+              user.UserID == longID)
+              //|| names.Contains(user.ScreenName)
+              select user).ToArray();
+
+            var firstOrDefault = userResponse.FirstOrDefault();
+            //if (firstOrDefault != null) twitterUrl = firstOrDefault.ProfileImageUrl;
+
+
+            if (firstOrDefault != null & !string.IsNullOrEmpty(firstOrDefault.ScreenNameResponse))
+            {
+                _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
+                //strQuery = "INSERT INTO [dbo].[Accounts] ([ScreenName],[ProfileName],[Joined],[LocationDescription],[Description],[AccountUrl],[Followers],[Following],[Link],[ProfileImageURL],[SpecialAccountId]) VALUES ('" + firstOrDefault.ScreenNameResponse + "','" + firstOrDefault.Name + "','" + firstOrDefault.CreatedAt + "','" + firstOrDefault.Location + "','" + firstOrDefault.Description + "','" + firstOrDefault.Url + "','" + firstOrDefault.FollowersCount + "','" + firstOrDefault.FriendsCount + "," + firstOrDefault.Url + "','" + firstOrDefault.ProfileBackgroundImageUrl + "','" + firstOrDefault.UserID + "')";
+                //strQuery = "Update [dbo].[Accounts] SET [ScreenName] = @ScreenName ,[ProfileName] = @ProfileName,[Joined] = @Joined,[LocationDescription] = @LocationDescription,[Description] = @Description,[AccountUrl] = @AccountUrl,[Followers] = @Followers,[Following] = @Following,[Link] = @Link,[ProfileImageURL] = @ProfileImageURL,[SpecialAccountId] = @SpecialAccountId WHERE [SpecialAccountId] = '" + id + "'";   //VALUES (@ScreenName,@ProfileName,@Joined,@LocationDescription,@Description,@AccountUrl,@Followers,@Following,@Link,@ProfileImageURL,@SpecialAccountId)
+                strQuery = "Update [dbo].[Accounts] SET [ScreenName] = @ScreenName ,[ProfileName] = @ProfileName,[Joined] = @Joined,[LocationDescription] = @LocationDescription,[Description] = @Description,[AccountUrl] = @AccountUrl,[Followers] = @Followers,[Following] = @Following,[Link] = @Link,[SpecialAccountId] = @SpecialAccountId,[ProfileImageURL] = @ProfileImageURL, [LastChanged] = @LastChanged WHERE [SpecialAccountId] = '" + id + "' OR [ScreenName] = '" + screenName + "'";   //VALUES (@ScreenName,@ProfileName,@Joined,@LocationDescription,@Description,@AccountUrl,@Followers,@Following,@Link,@ProfileImageURL,@SpecialAccountId)
+                SqlConnection cnn = new SqlConnection(_myConnectionString);
+                SqlCommand cmd = new SqlCommand(strQuery, cnn);
+                cmd.Parameters.AddWithValue("@ScreenName", (firstOrDefault.ScreenNameResponse != null) ? firstOrDefault.ScreenNameResponse.ToString() : string.Empty);
+                cmd.Parameters.AddWithValue("@ProfileName", (firstOrDefault.Name != null) ? firstOrDefault.Name.ToString() : string.Empty);
+                cmd.Parameters.AddWithValue("@Joined", firstOrDefault.CreatedAt);    //firstOrDefault.CreatedAt.ToString("YYYY-mm-DD")
+                cmd.Parameters.AddWithValue("@LocationDescription", (firstOrDefault.Location != null) ? firstOrDefault.Location.ToString() : string.Empty);
+                cmd.Parameters.AddWithValue("@Description", (firstOrDefault.Description != null) ? firstOrDefault.Description.ToString() : string.Empty);
+                cmd.Parameters.AddWithValue("@AccountUrl", (firstOrDefault.Url != null) ? firstOrDefault.Url.ToString() : string.Empty);
+                cmd.Parameters.AddWithValue("@Followers", firstOrDefault.FollowersCount);
+                cmd.Parameters.AddWithValue("@Following", firstOrDefault.FriendsCount);
+                cmd.Parameters.AddWithValue("@Link", (firstOrDefault.Url != null) ? firstOrDefault.Url.ToString() : string.Empty);
+                cmd.Parameters.AddWithValue("@ProfileImageURL", (firstOrDefault.ProfileImageUrl != null) ? firstOrDefault.ProfileImageUrl.ToString().Replace("normal", "400x400") : string.Empty);
+                cmd.Parameters.AddWithValue("@SpecialAccountId", firstOrDefault.UserID.ToString());
+                cmd.Parameters.AddWithValue("@LastChanged", DateTime.Now);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cnn.Open();
+                cmd.ExecuteNonQuery();
+                cnn.Close();
+                await JsRuntime.InvokeAsync<bool>("alert", "Updated Successfully");
+            }
+
+
+
+
+            return firstOrDefault.Email;
+
+
+
+
+        }
+        catch (Exception e)
+        {
+            return "test";
+        }
+    }
+
+    static IAuthorizer DoSingleUserAuth()
+    {
+        var auth = new SingleUserAuthorizer
+        {
+            CredentialStore = new SingleUserInMemoryCredentialStore
+            {
+                ConsumerKey = "HYMjzOjCUQvDmRxBI8JUmpFdk",
+                ConsumerSecret = "JQxInK1ZSf1eeILr7jLwnAO8FwMWPXuCX22ZXK0S2463LeExGR",
+                AccessToken = "1214552656871452672 - DwwC3fBNtknLrryxySes8EECvxfea6",
+                AccessTokenSecret = "leWszB6DcGg4HIT8yipJi8EVoMD6lfiUKA1df7auzpVL0"
+            }
+        };
+
+        return auth;
+    }
+
 }

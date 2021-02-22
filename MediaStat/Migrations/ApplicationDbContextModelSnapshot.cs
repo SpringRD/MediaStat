@@ -56,11 +56,17 @@ namespace MediaStat.Migrations
                     b.Property<DateTime?>("Joined")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("LastChanged")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Link")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Location")
                         .HasColumnType("int");
+
+                    b.Property<string>("LocationDescription")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Party")
                         .HasColumnType("int");
@@ -73,6 +79,9 @@ namespace MediaStat.Migrations
 
                     b.Property<string>("ScreenName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SpecialAccountId")
+                        .HasColumnType("nvarchar(4000)");
 
                     b.HasKey("AccountId");
 

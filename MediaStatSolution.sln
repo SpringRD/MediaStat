@@ -9,6 +9,8 @@ Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "Integration Services Import
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReplaceTextProjectt", "ReplaceTextProjectt\ReplaceTextProjectt.csproj", "{945042A5-9F93-4C66-B41A-D0A4358D1CAC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportProfilesService", "ImportProfilesService\ImportProfilesService.csproj", "{8E675807-E903-4470-B2E9-EE58A2C9018D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,12 @@ Global
 		{945042A5-9F93-4C66-B41A-D0A4358D1CAC}.Development|Any CPU.Build.0 = Debug|Any CPU
 		{945042A5-9F93-4C66-B41A-D0A4358D1CAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{945042A5-9F93-4C66-B41A-D0A4358D1CAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E675807-E903-4470-B2E9-EE58A2C9018D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E675807-E903-4470-B2E9-EE58A2C9018D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E675807-E903-4470-B2E9-EE58A2C9018D}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E675807-E903-4470-B2E9-EE58A2C9018D}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{8E675807-E903-4470-B2E9-EE58A2C9018D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E675807-E903-4470-B2E9-EE58A2C9018D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

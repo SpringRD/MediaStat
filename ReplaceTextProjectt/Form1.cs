@@ -25,8 +25,8 @@ namespace ReplaceTextProjectt
             string line;
 
             // Read the file and display it line by line.  
-            System.IO.StreamReader file =
-                new System.IO.StreamReader(@"C:\Users\z2\Desktop\Replaced.csv");
+            //System.IO.StreamReader file = new System.IO.StreamReader(@"F:\Tweet\From Jojo\New\test - Copy\Profiles.csv");
+            System.IO.StreamReader file = new System.IO.StreamReader(txtMainFile.Text);
             string lineWithoutQutaionsAtBeginAndEnd;
             string lineReplaced;
             string strAll = string.Empty;
@@ -49,8 +49,11 @@ namespace ReplaceTextProjectt
 
             file.Close();
 
-            System.IO.File.WriteAllText(@"C:\Users\z2\Desktop\Replaced.csv", string.Empty);
-            System.IO.File.WriteAllText(@"C:\Users\z2\Desktop\Replaced.csv", strAll);
+            //System.IO.File.WriteAllText(@"C:\Users\z2\Desktop\Replaced.csv", string.Empty);
+            //System.IO.File.WriteAllText(@"C:\Users\z2\Desktop\Replaced.csv", strAll);
+
+            System.IO.File.WriteAllText(txtReplaced.Text, string.Empty);
+            System.IO.File.WriteAllText(txtReplaced.Text, strAll);
 
 
 
@@ -63,6 +66,13 @@ namespace ReplaceTextProjectt
 
             //System.IO.File.WriteAllText(@"C:\Users\z2\Desktop\Replaced.csv", string.Empty);
             //System.IO.File.WriteAllText(@"C:\Users\z2\Desktop\Replaced.csv", output);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var oldString = "your\ttext area\n string\r\n for testing";
+            var newString = string.Join(" ", Regex.Split(oldString, @"(?:\r)"));
+            MessageBox.Show(newString);
         }
     }
 }

@@ -4,7 +4,7 @@
 @inject AccountService objAccountService
 @inject LookupService objLookupService
 @inject NavigationManager navigationManager
-
+@using LinqToTwitter;
 @*@attribute [Authorize]*@
 
 <h2>Add Account</h2>
@@ -12,48 +12,50 @@
 
 <form>
     <RadzenCard>
-        
+
         <div class="row">
-            
+
             <div class="form-group col-12 col-sm-6 col-md-4 col-lg-3 float-left">
                 <RadzenImage class="img-thumbnail" @bind-Path="@objAccount.ProfileImageURL" style="height: 217px; width: 100%; border-radius: 4px 4px 0px 0px" />
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" style="border-radius: 0px 0px 0px 4px; margin-top: -1px" id="basic-addon3">URL</span>
                     </div>
-                    <input type="text" class="form-control" style="border-radius: 0px 0px 4px 0px; margin-top: -1px" aria-describedby="basic-addon3" id="basic-url" @bind="@objAccount.ProfileImageURL"/>
+                    <input type="text" class="form-control" style="border-radius: 0px 0px 4px 0px; margin-top: -1px" aria-describedby="basic-addon3" id="basic-url" @bind="@objAccount.ProfileImageURL" />
                 </div>
             </div>
 
             <div class="form-group col-12 col-sm-6 col-md-8 col-lg-9">
-                
+
                 <div class="row">
 
                     <div class="form-group col-12 col-sm-12 col-md-6">
-                        <RadzenLabel class="col-form-label" Component="tbScreenName" Text="Screen Name"/>
-                        <RadzenTextBox class="form-control" Name="tbScreenName" @bind-Value="@objAccount.ScreenName"/>
+                        <RadzenLabel class="col-form-label" Component="tbScreenName" Text="Screen Name" />
+                        <RadzenTextBox class="form-control" Name="tbScreenName" @bind-Value="@objAccount.ScreenName" />
                     </div>
                     <div class="form-group col-12 col-sm-12 col-md-6">
-                        <RadzenLabel class="col-form-label" Component="tbProfileName" Text="Profile Name"/>
-                        <RadzenTextBox class="form-control" Name="tbProfileName" @bind-Value="@objAccount.ProfileName"/>
+                        <RadzenLabel class="col-form-label" Component="tbProfileName" Text="Profile Name" />
+                        <RadzenTextBox class="form-control" Name="tbProfileName" @bind-Value="@objAccount.ProfileName" />
                     </div>
 
                     <div class="form-group col-12 col-sm-12 col-md-6">
-                        <RadzenLabel class="col-form-label" Component="dpDOB" Text="Date of birth"/>
-                        <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpDOB" @bind-Value="@objAccount.DateOfBirth" DateFormat="dd/MM/yyyy"/>
+                        <RadzenLabel class="col-form-label" Component="dpDOB" Text="Date of birth" />
+                        <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpDOB" @bind-Value="@objAccount.DateOfBirth" DateFormat="dd/MM/yyyy" />
                     </div>
                     <div class="form-group col-md-6 d-sm-none d-md-inline">
-                        <RadzenLabel class="col-form-label" Component="dpJoinDate" Text="Join Date"/>
-                        <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpJoinDate" @bind-Value="@objAccount.Joined" DateFormat="dd/MM/yyyy"/>
+                        <RadzenLabel class="col-form-label" Component="dpJoinDate" Text="Join Date" />
+                        <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpJoinDate" @bind-Value="@objAccount.Joined" DateFormat="dd/MM/yyyy" />
                     </div>
-                    
+
                     <div class="form-group col-md-6 d-sm-none d-md-inline">
-                        <RadzenLabel class="col-form-label" Component="cmbLocation" Text="Location"/>
-                        <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>
+                        @*<RadzenLabel class="col-form-label" Component="cmbLocation" Text="Location"/>
+                            <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>*@
+                        <RadzenLabel class="col-form-label" Component="tbLocationDescription" Text="Location" />
+                        <RadzenTextBox class="form-control" Name="tbLocationDescription" @bind-Value="@objAccount.LocationDescription" />
                     </div>
                     <div class="form-group col-md-6 d-sm-none d-md-inline">
-                        <RadzenLabel class="col-form-label" Component="cmbParty" Text="Party"/>
-                        <RadzenDropDown class="form-control" Name="cmbParty" TValue="int?" @bind-Value="@objAccount.Party" Placeholder="Select..." Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>
+                        <RadzenLabel class="col-form-label" Component="cmbParty" Text="Party" />
+                        <RadzenDropDown class="form-control" Name="cmbParty" TValue="int?" @bind-Value="@objAccount.Party" Placeholder="Select..." Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
                     </div>
                 </div>
 
@@ -61,65 +63,65 @@
 
 
             <div class="form-group col-12 col-sm-12 d-sm-inline d-md-none">
-                <RadzenLabel class="col-form-label" Component="dpJoinDate2" Text="Join Date"/>
-                <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpJoinDate2" @bind-Value="@objAccount.Joined" DateFormat="dd/MM/yyyy"/>
+                <RadzenLabel class="col-form-label" Component="dpJoinDate2" Text="Join Date" />
+                <RadzenDatePicker class="form-control" style="border: 0px; padding: 0px;" Name="dpJoinDate2" @bind-Value="@objAccount.Joined" DateFormat="dd/MM/yyyy" />
             </div>
-                
+
             <div class="form-group col-12 col-sm-12 d-sm-inline d-md-none">
-                <RadzenLabel class="col-form-label" Component="cmbLocation2" Text="Location"/>
-                <RadzenDropDown class="form-control" Name="cmbLocation2" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>
+                <RadzenLabel class="col-form-label" Component="cmbLocation2" Text="Location" />
+                <RadzenDropDown class="form-control" Name="cmbLocation2" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 d-sm-inline d-md-none">
-                <RadzenLabel class="col-form-label" Component="cmbParty2" Text="Party"/>
-                <RadzenDropDown class="form-control" Name="cmbParty2" TValue="int?" @bind-Value="@objAccount.Party" Placeholder="Select..." Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>
+                <RadzenLabel class="col-form-label" Component="cmbParty2" Text="Party" />
+                <RadzenDropDown class="form-control" Name="cmbParty2" TValue="int?" @bind-Value="@objAccount.Party" Placeholder="Select..." Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
             </div>
 
 
             <div class="form-group col-12 col-md-4">
-                <RadzenLabel class="col-form-label" Component="cmbAccountType" Text="Account Type"/>
-                <RadzenDropDown class="form-control" Name="cmbAccountType" TValue="int?" @bind-Value="@objAccount.AccountType" Placeholder="Select..." Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>
+                <RadzenLabel class="col-form-label" Component="cmbAccountType" Text="Account Type" />
+                <RadzenDropDown class="form-control" Name="cmbAccountType" TValue="int?" @bind-Value="@objAccount.AccountType" Placeholder="Select..." Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
             </div>
             <div class="form-group col-12 col-md-8">
-                <RadzenLabel class="col-form-label" Component="tbAccountUrl" Text="Account Url"/>
-                <RadzenTextBox class="form-control" Name="tbAccountUrl" @bind-Value="@objAccount.AccountUrl"/>
+                <RadzenLabel class="col-form-label" Component="tbAccountUrl" Text="Account Url" />
+                <RadzenTextBox class="form-control" Name="tbAccountUrl" @bind-Value="@objAccount.AccountUrl" />
             </div>
 
 
 
             <div class="form-group col-12 col-sm-6 col-md-4">
-                <RadzenLabel class="col-form-label" Component="cmbAccountClassification1" Text="Account Classification1"/>
-                <RadzenDropDown class="form-control" Name="cmbAccountClassification1" TValue="int?" @bind-Value="@objAccount.Classification1" Placeholder="Select..." Data="@classification1s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>
+                <RadzenLabel class="col-form-label" Component="cmbAccountClassification1" Text="Account Classification1" />
+                <RadzenDropDown class="form-control" Name="cmbAccountClassification1" TValue="int?" @bind-Value="@objAccount.Classification1" Placeholder="Select..." Data="@classification1s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
             </div>
             <div class="form-group col-12 col-sm-6 col-md-4">
-                <RadzenLabel class="col-form-label" Component="cmbAccountClassification2" Text="Account Classification2"/>
-                <RadzenDropDown class="form-control" Name="cmbAccountClassification2" TValue="int?" @bind-Value="@objAccount.Classification2" Placeholder="Select..." Data="@classification2s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>
+                <RadzenLabel class="col-form-label" Component="cmbAccountClassification2" Text="Account Classification2" />
+                <RadzenDropDown class="form-control" Name="cmbAccountClassification2" TValue="int?" @bind-Value="@objAccount.Classification2" Placeholder="Select..." Data="@classification2s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
             </div>
-            <div class="w-100"/>
+            <div class="w-100" />
 
 
             <div class="form-group col-12 col-sm-6 col-md-4">
-                <RadzenLabel class="col-form-label" Component="tbFollowers" Text="Followers"/>
-                <RadzenNumeric class="form-control" Name="tbFollowers" TValue="int?" Step="1" @bind-Value="@objAccount.Followers"/>
+                <RadzenLabel class="col-form-label" Component="tbFollowers" Text="Followers" />
+                <RadzenNumeric class="form-control" Name="tbFollowers" TValue="int?" Step="1" @bind-Value="@objAccount.Followers" />
             </div>
             <div class="form-group col-12 col-sm-6 col-md-4">
-                <RadzenLabel class="col-form-label" Component="tbFollowing" Text="Following"/>
-                <RadzenNumeric class="form-control" Name="tbFollowing" TValue="int?" Step="1" @bind-Value="@objAccount.Following"/>
+                <RadzenLabel class="col-form-label" Component="tbFollowing" Text="Following" />
+                <RadzenNumeric class="form-control" Name="tbFollowing" TValue="int?" Step="1" @bind-Value="@objAccount.Following" />
             </div>
-            <div class="w-100"/>
+            <div class="w-100" />
 
             <div class="form-group col-12">
                 <RadzenFieldset AllowCollapse="false">
                     <HeaderTemplate>
                         <span>
-                            <RadzenIcon Icon="account_box"/>
-                            <RadzenLabel style="color: black; font-size: 16px" Text="Account Links"/>
+                            <RadzenIcon Icon="account_box" />
+                            <RadzenLabel style="color: black; font-size: 16px" Text="Account Links" />
                         </span>
                     </HeaderTemplate>
                     <ChildContent>
                         <div class="input-group mb-3">
-                            <RadzenTextBox class="form-control" MaxLength="50" @bind-value="@strNewLink"/>
+                            <RadzenTextBox class="form-control" MaxLength="50" @bind-value="@strNewLink" />
                             <div class="input-group-append">
-                                <RadzenButton style="border-radius: 0px 4px 4px 0px" Text="Add" Click="@(args => AddLink_Click(@objAccount))"/>
+                                <RadzenButton style="border-radius: 0px 4px 4px 0px" Text="Add" Click="@(args => AddLink_Click(@objAccount))" />
                             </div>
                         </div>
                     </ChildContent>
@@ -128,17 +130,21 @@
             </div>
 
             <div class="form-group col-12 col-md-12">
-                <RadzenLabel Component="tbDescription" Text="Description"/>
-                <RadzenTextArea class="form-control" Name="tbDescription" @bind-Value="@objAccount.Description" Rows="3"/>
+                <RadzenLabel Component="tbDescription" Text="Description" />
+                <RadzenTextArea class="form-control" Name="tbDescription" @bind-Value="@objAccount.Description" Rows="3" />
             </div>
 
         </div>
-        
+
 
         <div class="row ">
             <div class="col">
-                    <input type="button" class="btn btn-primary" @onclick="@CreateAccount" value="Save"/>
-                    <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel"/>
+                <input type="button" class="btn btn-primary" @onclick="@CreateAccount" value="Save" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+                @if (!string.IsNullOrEmpty(objAccount.SpecialAccountId))
+                {
+                    <input type="button" class="btn btn-primary" @onclick="@((args) => UpdateProfileData(objAccount.SpecialAccountId))" value="Update" />
+                }
             </div>
         </div>
     </RadzenCard>
@@ -201,6 +207,53 @@
         }
         objAccount.AccountLinks.Add(objAccountLink);
         strNewLink = string.Empty;
+    }
+
+
+    public async Task<string> UpdateProfileData(string id)
+    {
+
+
+        var auth = DoSingleUserAuth();
+
+        await auth.AuthorizeAsync();
+
+        //List<string> names = new List<string>() {"naem1","namne2" };
+        var twitterCtx = new TwitterContext(auth) { ReadWriteTimeout = 300 };
+        try
+        {
+            var userResponse =
+                 (from user in twitterCtx.User
+                  where user.Type == UserType.Show &&
+                  user.ScreenName == id
+                  //user.ScreenName == "sami"
+                  //|| names.Contains(user.ScreenName)
+                  select user).ToArray();
+
+            var firstOrDefault = userResponse.FirstOrDefault();
+            //if (firstOrDefault != null) twitterUrl = firstOrDefault.ProfileImageUrl;
+            return firstOrDefault.Email;
+        }
+        catch (Exception e)
+        {
+            return "test";
+        }
+    }
+
+    static IAuthorizer DoSingleUserAuth()
+    {
+        var auth = new SingleUserAuthorizer
+        {
+            CredentialStore = new SingleUserInMemoryCredentialStore
+            {
+                ConsumerKey = "HYMjzOjCUQvDmRxBI8JUmpFdk",
+                ConsumerSecret = "JQxInK1ZSf1eeILr7jLwnAO8FwMWPXuCX22ZXK0S2463LeExGR",
+                AccessToken = "1214552656871452672 - DwwC3fBNtknLrryxySes8EECvxfea6",
+                AccessTokenSecret = "leWszB6DcGg4HIT8yipJi8EVoMD6lfiUKA1df7auzpVL0"
+            }
+        };
+
+        return auth;
     }
 
 }

@@ -1,0 +1,807 @@
+﻿@page "/ServicesPage"
+@using MediaStat.Data
+@using Microsoft.Data.SqlClient
+@using LinqToTwitter;
+@using System.Data;
+@using System.Linq;
+@inject IJSRuntime JsRuntime;
+@inject Services.BlazorTimer MyTimer;
+
+@using MediaStat.Services
+@using MongoDB.Driver
+@using MongoDB.Bson;
+
+@inject IFileUpload fileUpload
+@*@using Microsoft.SqlServer.Management.Sdk.Sfc*@
+@*@using Microsoft.SqlServer.Management.IntegrationServices*@
+
+<h3>ServicesPage</h3>
+
+@*<div>
+        <RadzenButton Text="Deploy Project" Click="@DeployProject_Click"></RadzenButton>
+        <RadzenTextBox ReadOnly="true" Value="@strDeployFlag"> </RadzenTextBox>
+    </div>*@
+
+<div class="row">
+    @*<div class="col-md-6">
+            <RadzenLabel class="col-form-label" Text="Profiles File Path" />
+            <RadzenTextBox @bind-value="strProfilesFilePath"> </RadzenTextBox>
+        </div>
+        <div class="col-md-3">
+            <RadzenButton Text="Save" Click="@SaveProfilesFilePath_Click"></RadzenButton>
+        </div>*@
+
+
+    @*<div class="col-md-6">
+            <RadzenUpload ChooseText="Upload profiles file" Accept="Folder" Url="ServicesPage/uploadProfiles" Style="margin-bottom:20px;" Progress="@((args)=> OnProgress(args,"Single upload"))"></RadzenUpload>
+        </div>*@
+</div>
+
+
+<div class="row">
+    @*<div class="col-md-6">
+            <RadzenLabel class="col-form-label" Text="Tweets File Path" />
+            <RadzenTextBox @bind-value="strTweetFilePath"> </RadzenTextBox>
+        </div>
+        <div class="col-md-3">
+            <RadzenButton Text="Save" Click="@SaveTweetFilePath_Click"></RadzenButton>
+        </div>*@
+
+
+    @*<div class="col-md-6">
+            <RadzenUpload ChooseText="Upload tweets file" Accept="Folder" Url="ServicesPage/single" Style="margin-bottom:20px;" Complete="@((args)=> OnComplete(args,"Single upload"))"></RadzenUpload>
+        </div>*@
+
+</div>
+
+
+<RadzenLabel class="col-form-label" Text="Profiles File Path:     " Style="background-color:aquamarine;" />
+<InputFile OnChange="@((args)=> HandleProfilesFileSelected(args))"></InputFile>
+<br />
+<RadzenLabel class="col-form-label" Text="Tweets File Path:     " Style="background-color:aquamarine;" />
+<InputFile OnChange="@((args)=> HandleFileSelected(args))"></InputFile>
+<br />
+<br />
+<br />
+
+
+@*<div class="col-md-6">
+        <h3>Folder settings</h3>
+        <RadzenCard Style="overflow:auto;height:500px;">
+            <RadzenProgressBar Value="@progress" Unit="@info" Visible="@(progress>0)" Style="margin-bottom:20px;"></RadzenProgressBar>
+        </RadzenCard>
+    </div>*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <RadzenButton Text="Import profiles from CSV file" Click="@InstallService_Click"></RadzenButton>
+        </div>
+        <div class="col-md-6">
+            <RadzenTextBox ReadOnly="true" Value="@strFlag"> </RadzenTextBox>
+        </div>
+    </div>
+    <br>
+    <RadzenButton Text="Update profiles" Click="@UpdateProfiles"></RadzenButton>
+    <RadzenTextBox ReadOnly="true" Value="@strUpdateFlag"> </RadzenTextBox>
+    <br>
+    <br>
+    <RadzenButton Text="Import profiles From Mongodb" Click="@ImportProfilesFromMongodb"></RadzenButton>
+    <RadzenTextBox Name="txtImportProfilesFromMongodbFlag" ReadOnly="true" Value="@strImportProfilesFromMongodbFlag"> </RadzenTextBox>
+    <br>
+    <br>
+    <RadzenButton Text="Update profiles Classifications" Click="@UpdateProfilesSpecialClassifications"></RadzenButton>
+    <RadzenTextBox ReadOnly="true" Value="@strUpdateClassificationsFlag"> </RadzenTextBox>
+    <br>
+    <br>
+    <RadzenButton Text="Import Tweets from CSV file" Click="@ImportTweets"></RadzenButton>
+    <RadzenTextBox ReadOnly="true" Value="@strImportTweetsFlag"> </RadzenTextBox>
+    <br>
+    <br>
+    <RadzenButton Text="Import Tweets From Mongodb" Click="@ImportTweetsFromMongodb"></RadzenButton>
+    <RadzenTextBox Name="txtImportTweetsFromMongodbFlag" ReadOnly="true" Value="@strImportTweetsFromMongodbFlag"> </RadzenTextBox>
+</div>
+
+
+@*<RadzenButton Text="Call Api" Click="@((args) => UpdateProfileData(acc))"></RadzenButton>*@
+
+@code {
+    private string strFlag = "";
+    private string strUpdateFlag = "";
+    private string strDeployFlag = "";
+    private string strUpdateClassificationsFlag = "";
+    private string strImportTweetsFlag = "";
+    private string strImportTweetsFromMongodbFlag = "";
+    private string strImportProfilesFromMongodbFlag = "";
+
+    private string strTweetFilePath = "";
+    private string strProfilesFilePath = "";
+
+    private MyClass _myClass;
+
+    int progress;
+    string info;
+
+
+    IFileListEntry file;
+    async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        file = files.FirstOrDefault();
+        if (file != null)
+        {
+            string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            string strQuery = "SELECT [TweetsFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
+            SqlConnection cnn = new SqlConnection(_myConnectionString);
+            SqlCommand cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            string uploadPath = (string)cmd.ExecuteScalar();
+            cnn.Close();
+
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+            else
+            {
+                System.IO.DirectoryInfo di = new DirectoryInfo(uploadPath);
+
+                foreach (FileInfo f in di.GetFiles())
+                {
+                    f.Delete();
+                }
+            }
+            await fileUpload.UploadAsync(uploadPath, file);
+
+            await JsRuntime.InvokeAsync<bool>("alert", "Uploaded Successfully");
+        }
+    }
+
+
+    IFileListEntry profilesFile;
+    async Task HandleProfilesFileSelected(IFileListEntry[] files)
+    {
+        profilesFile = files.FirstOrDefault();
+        if (profilesFile != null)
+        {
+            string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            string strQuery = "SELECT [ProfilesFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
+            SqlConnection cnn = new SqlConnection(_myConnectionString);
+            SqlCommand cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            string uploadPath = (string)cmd.ExecuteScalar();
+            cnn.Close();
+
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+            else
+            {
+                System.IO.DirectoryInfo di = new DirectoryInfo(uploadPath);
+
+                foreach (FileInfo f in di.GetFiles())
+                {
+                    f.Delete();
+                }
+            }
+            await fileUpload.UploadProfilesAsync(uploadPath, profilesFile);
+
+            await JsRuntime.InvokeAsync<bool>("alert", "Uploaded Successfully");
+        }
+    }
+
+
+    async Task OnProgress(Radzen.UploadProgressArgs args, string name)
+    {
+        this.info = $"%'{name}'/ {args.Loaded} of {args.Total} bytes.";
+        this.progress = args.Progress;
+
+        if (args.Loaded == args.Total)
+        {
+            await JsRuntime.InvokeAsync<bool>("alert", "Uploaded Successfully");
+        }
+
+
+    }
+
+    async Task OnComplete(Radzen.UploadCompleteEventArgs args, string name)
+    {
+        await JsRuntime.InvokeAsync<bool>("alert", "Uploaded Successfully");
+    }
+
+    protected override void OnInitialized()
+    {
+        string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        string strQuery = "SELECT [TweetsFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        strTweetFilePath = (string)cmd.ExecuteScalar();
+
+
+        strQuery = "SELECT [ProfilesFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
+        cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        strProfilesFilePath = (string)cmd.ExecuteScalar();
+        cnn.Close();
+    }
+
+    private void DeployProject_Click()
+    {
+        string _myConnectionString = MyAppData.MyConnectionString;
+
+
+        string targetServerName = "localhost";
+        string targetFolderName = "Project1Folder";
+        string projectName = "Integration Services Project1";
+        string projectFilePath = @"C:\Projects\Integration Services Project1\Integration Services Project1\bin\Development\Integration Services Project1.ispac";
+
+        _myConnectionString = "Server=.;Database=SSISDB;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
+        SqlConnection sqlConnection = new SqlConnection(_myConnectionString);
+
+        // Create the Integration Services object
+        //IntegrationServices integrationServices = new IntegrationServices(sqlConnection);
+
+        //// Get the Integration Services catalog
+        //Catalog catalog = integrationServices.Catalogs["SSISDB"];
+
+        //// Create the target folder
+        //CatalogFolder folder = new CatalogFolder(catalog,
+        //    targetFolderName, "Folder description");
+        //folder.Create();
+
+        //Console.WriteLine("Deploying " + projectName + " project.");
+
+        //byte[] projectFile = File.ReadAllBytes(projectFilePath);
+        //folder.DeployProject(projectName, projectFile);
+
+
+    }
+
+    private async void InstallService_Click()
+    {
+        //MyAppData.Configuration.
+        //string sss = _myClass.ConnectionString;
+
+        string _myConnectionString = MyAppData.MyConnectionString;
+
+        //System.Diagnostics.Process process = new System.Diagnostics.Process();
+        //System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+        //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+        //startInfo.FileName = "cmd.exe";
+        //startInfo.Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg";
+        //process.StartInfo = startInfo;
+        //process.Start();
+
+
+        //string strCmdText;
+        //strCmdText = @"cd F:\Tweet\Web Apps\MediaStat\MediaStat\ImportProfilesService\bin\Debug\netcoreapp3.1";
+        //System.Diagnostics.Process.Start("CMD.exe", strCmdText);
+
+
+
+
+        string strQuery;
+        strQuery = "Declare @execution_id bigint" + Environment.NewLine;
+        strQuery = strQuery + "EXEC [SSISDB].[catalog].[create_execution] @package_name=N'Package6.dtsx', @execution_id=@execution_id OUTPUT, @folder_name=N'Test', @project_name=N'Integration Services Import Data', @use32bitruntime=False, @reference_id=Null, @runinscaleout=False" + Environment.NewLine;
+        strQuery = strQuery + "Select @execution_id" + Environment.NewLine;
+        strQuery = strQuery + "DECLARE @var0 sql_variant = N'" + strProfilesFilePath + "'" + Environment.NewLine;
+        strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=30, @parameter_name=N'ProfilesFilePath', @parameter_value=@var0" + Environment.NewLine;
+        strQuery = strQuery + "DECLARE @var1 smallint = 1" + Environment.NewLine;
+        strQuery = strQuery + "EXEC[SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type = 50, @parameter_name = N'LOGGING_LEVEL', @parameter_value = @var1" + Environment.NewLine;
+        strQuery = strQuery + "EXEC[SSISDB].[catalog].[start_execution] @execution_id";
+        _myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
+
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        cmd.ExecuteNonQuery();
+        cnn.Close();
+        strFlag = "Service Started";
+
+
+        //await startTimer();
+
+    }
+
+    private const double intervalMilliseconds = 5000;
+
+    private async Task startTimer()
+    {
+
+        MyTimer.SetTimer(intervalMilliseconds, true);
+        MyTimer.OnElapsed +=
+        async delegate
+        {
+            try
+            {
+                await TestIfImportFinished();
+            }
+            catch (Exception e)
+            {
+
+            }
+        };
+
+    }
+
+    private async Task TestIfImportFinished()
+    {
+
+        string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        string strQuery = "SELECT [ProfilesImportEnded] FROM [MediaStat].[dbo].[GeneralConfig]";
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        bool endImport = (bool)cmd.ExecuteScalar();
+        cnn.Close();
+
+        if (endImport == true)
+        {
+            await JsRuntime.InvokeAsync<bool>("alert", "Profiles Imported Successfully");
+
+            strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [ProfilesImportEnded] = 0";
+            cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            cmd.ExecuteNonQuery();
+            cnn.Close();
+
+            System.IO.DirectoryInfo di = new DirectoryInfo(strProfilesFilePath);
+
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (DirectoryInfo dir in di.GetDirectories())
+            {
+                dir.Delete(true);
+            }
+
+            MyTimer.SetTimer(intervalMilliseconds, false);
+            MyTimer.StopTimer();
+
+        }
+
+    }
+
+
+    private async Task<string> UpdateProfiles()
+    {
+        string _myConnectionString = MyAppData.MyConnectionString;
+        ulong longID;
+        string screenName;
+
+        string strQuery;
+        _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
+        strQuery = "SELECT [ScreenName],[SpecialAccountId] FROM [dbo].[Accounts]";
+
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        SqlDataReader reader = cmd.ExecuteReader();
+        System.Data.DataTable dt = new System.Data.DataTable();
+        dt.Load(reader);
+        cnn.Close();
+
+
+        if (dt.Rows.Count > 0)
+        {
+            var auth = new ApplicationOnlyAuthorizer
+            {
+                CredentialStore = new InMemoryCredentialStore()
+                {
+                    ConsumerKey = "HYMjzOjCUQvDmRxBI8JUmpFdk",
+                    ConsumerSecret = "JQxInK1ZSf1eeILr7jLwnAO8FwMWPXuCX22ZXK0S2463LeExGR"
+                }
+            };
+
+            await auth.AuthorizeAsync();
+
+            //List<string> names = new List<string>() {"naem1","namne2" };
+            var twitterCtx = new TwitterContext(auth) { ReadWriteTimeout = 300 };
+            foreach (DataRow row in dt.Rows)
+            {
+                longID = (ulong)long.Parse(row["SpecialAccountId"].ToString());
+                screenName = row["ScreenName"].ToString();
+
+                var userResponse = (from user in twitterCtx.User
+                                    where user.Type == UserType.Show &&
+                                          (user.ScreenName == screenName ||
+                                          user.UserID == longID)
+                                    select user).ToArray();
+
+                var firstOrDefault = userResponse.FirstOrDefault();
+
+                if (firstOrDefault != null & !string.IsNullOrEmpty(firstOrDefault.ScreenNameResponse))
+                {
+                    strQuery = "Update [dbo].[Accounts] SET [ScreenName] = @ScreenName ,[ProfileName] = @ProfileName,[Joined] = @Joined,[LocationDescription] = @LocationDescription,[Description] = @Description,[AccountUrl] = @AccountUrl,[Followers] = @Followers,[Following] = @Following,[Link] = @Link,[SpecialAccountId] = @SpecialAccountId,[ProfileImageURL] = @ProfileImageURL, [LastChanged] = @LastChanged WHERE [SpecialAccountId] = '" + firstOrDefault.UserID.ToString() + "' OR [ScreenName] = '" + screenName + "'";   //VALUES (@ScreenName,@ProfileName,@Joined,@LocationDescription,@Description,@AccountUrl,@Followers,@Following,@Link,@ProfileImageURL,@SpecialAccountId)
+                    cnn = new SqlConnection(_myConnectionString);
+                    cmd = new SqlCommand(strQuery, cnn);
+                    cmd.Parameters.AddWithValue("@ScreenName", (firstOrDefault.ScreenNameResponse != null) ? firstOrDefault.ScreenNameResponse.ToString() : string.Empty);
+                    cmd.Parameters.AddWithValue("@ProfileName", (firstOrDefault.Name != null) ? firstOrDefault.Name.ToString() : string.Empty);
+                    cmd.Parameters.AddWithValue("@Joined", firstOrDefault.CreatedAt);    //firstOrDefault.CreatedAt.ToString("YYYY-mm-DD")
+                    cmd.Parameters.AddWithValue("@LocationDescription", (firstOrDefault.Location != null) ? firstOrDefault.Location.ToString() : string.Empty);
+                    cmd.Parameters.AddWithValue("@Description", (firstOrDefault.Description != null) ? firstOrDefault.Description.ToString() : string.Empty);
+                    cmd.Parameters.AddWithValue("@AccountUrl", (firstOrDefault.Url != null) ? firstOrDefault.Url.ToString() : string.Empty);
+                    cmd.Parameters.AddWithValue("@Followers", firstOrDefault.FollowersCount);
+                    cmd.Parameters.AddWithValue("@Following", firstOrDefault.FriendsCount);
+                    cmd.Parameters.AddWithValue("@Link", (firstOrDefault.Url != null) ? firstOrDefault.Url.ToString() : string.Empty);
+                    cmd.Parameters.AddWithValue("@ProfileImageURL", (firstOrDefault.ProfileImageUrl != null) ? firstOrDefault.ProfileImageUrl.ToString().Replace("normal", "400x400") : string.Empty);
+                    cmd.Parameters.AddWithValue("@SpecialAccountId", firstOrDefault.UserID.ToString());
+                    cmd.Parameters.AddWithValue("@LastChanged", DateTime.Now);
+                    cmd.CommandType = System.Data.CommandType.Text;
+                    cnn.Open();
+                    cmd.ExecuteNonQuery();
+                    cnn.Close();
+                }
+
+
+                strUpdateFlag = "Updating ....";
+            }
+        }
+
+
+        strUpdateFlag = "Update Completed ...";
+        return strFlag;
+    }
+
+    private async Task<string> UpdateProfilesSpecialClassifications()
+    {
+        string _myConnectionString = MyAppData.MyConnectionString;
+        ulong longID;
+        string screenName;
+
+        string strQuery;
+        _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
+        strUpdateClassificationsFlag = "Updating ....";
+
+        strQuery = "UPDATE R SET R.Party = P.Party,R.Classification1 = P.Classification1 FROM [dbo].[Accounts] AS R INNER JOIN [dbo].[SpecialClassifications] P  ON R.ScreenName = SUBSTRING(P.ScreenName, 2, LEN(P.ScreenName))";
+
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        cmd.ExecuteNonQuery();
+        cnn.Close();
+
+        strUpdateClassificationsFlag = "Update Completed ...";
+        return strUpdateClassificationsFlag;
+    }
+
+
+    private const string URL = "https://sub.domain.com/objects.json";
+    private string urlParameters = "?api_key=123";
+
+    private void CallApi()
+    {
+
+
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri(URL);
+
+        // Add an Accept header for JSON format.
+        client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+
+        // List data response.
+        HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+        if (response.IsSuccessStatusCode)
+        {
+            // Parse the response body.
+            var dataObjects = response.Content.ReadAsAsync<IEnumerable<DataObject>>().Result;  //Make sure to add a reference to System.Net.Http.Formatting.dll
+            foreach (var d in dataObjects)
+            {
+                Console.WriteLine("{0}", d.Name);
+            }
+        }
+        else
+        {
+            Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+        }
+
+        //Make any other calls using HttpClient here.
+
+        //Dispose once all HttpClient calls are complete. This is not necessary if the containing object will be disposed of; for example in this case the HttpClient instance will be disposed automatically when the application terminates so the following call is superfluous.
+        client.Dispose();
+
+    }
+
+    public class DataObject
+    {
+        public string Name { get; set; }
+    }
+
+
+    public async Task<string> UpdateProfileData()
+    {
+
+
+        var auth = DoSingleUserAuth();
+
+        await auth.AuthorizeAsync();
+
+        //List<string> names = new List<string>() {"naem1","namne2" };
+        var twitterCtx = new TwitterContext(auth) { ReadWriteTimeout = 300 };
+        try
+        {
+            var userResponse =
+                 (from user in twitterCtx.User
+                  where user.Type == UserType.Show &&
+                        user.ScreenName == "sami"
+                  //|| names.Contains(user.ScreenName)
+                  select user).ToArray();
+
+            var firstOrDefault = userResponse.FirstOrDefault();
+            //if (firstOrDefault != null) twitterUrl = firstOrDefault.ProfileImageUrl;
+            return firstOrDefault.Email;
+        }
+        catch (Exception e)
+        {
+            return "test";
+        }
+    }
+
+    static IAuthorizer DoSingleUserAuth()
+    {
+        var auth = new SingleUserAuthorizer
+        {
+            CredentialStore = new SingleUserInMemoryCredentialStore
+            {
+                ConsumerKey = "HYMjzOjCUQvDmRxBI8JUmpFdk",
+                ConsumerSecret = "JQxInK1ZSf1eeILr7jLwnAO8FwMWPXuCX22ZXK0S2463LeExGR",
+                AccessToken = "1214552656871452672 - DwwC3fBNtknLrryxySes8EECvxfea6",
+                AccessTokenSecret = "leWszB6DcGg4HIT8yipJi8EVoMD6lfiUKA1df7auzpVL0"
+            }
+        };
+
+        return auth;
+    }
+
+    private async Task<string> ImportTweets()
+    {
+
+        string _myConnectionString = MyAppData.MyConnectionString;
+
+        string strQuery;
+        //strQuery = "Declare @execution_id bigint" + Environment.NewLine;
+        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[create_execution] @package_name=N'Package7.dtsx', @execution_id=@execution_id OUTPUT, @folder_name=N'Test', @project_name=N'Integration Services Import Data', @use32bitruntime=False, @reference_id=Null, @runinscaleout=False" + Environment.NewLine;
+        //strQuery = strQuery + "Select @execution_id" + Environment.NewLine;
+        //strQuery = strQuery + "DECLARE @var0 smallint = 1" + Environment.NewLine;
+        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=50, @parameter_name=N'LOGGING_LEVEL', @parameter_value=@var0" + Environment.NewLine;
+        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[start_execution] @execution_id" + Environment.NewLine;
+
+
+
+        strQuery = "Declare @execution_id bigint" + Environment.NewLine;
+        strQuery = strQuery + "EXEC[SSISDB].[catalog].[create_execution] @package_name = N'Package7.dtsx', @execution_id = @execution_id OUTPUT, @folder_name = N'Test', @project_name = N'Integration Services Import Data', @use32bitruntime = False, @reference_id = Null, @runinscaleout = False" + Environment.NewLine;
+        strQuery = strQuery + "Select @execution_id" + Environment.NewLine;
+        string strTweetFilePath_Param = @"C:\MyUploads\Tweets";
+        strQuery = strQuery + "DECLARE @var0 sql_variant = N'" + strTweetFilePath_Param + "'" + Environment.NewLine;
+        strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=30, @parameter_name=N'SourceFolderParam', @parameter_value=@var0" + Environment.NewLine;
+        strQuery = strQuery + "DECLARE @var1 smallint = 1" + Environment.NewLine;
+        strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=50, @parameter_name=N'LOGGING_LEVEL', @parameter_value=@var1" + Environment.NewLine;
+        strQuery = strQuery + "EXEC [SSISDB].[catalog].[start_execution] @execution_id" + Environment.NewLine;
+
+
+        _myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        cmd.ExecuteNonQuery();
+        cnn.Close();
+        strImportTweetsFlag = "Service Started";
+        //strImportTweetsFlag = "Service Completed ...";
+        return strImportTweetsFlag;
+    }
+
+    private async Task<string> ImportTweetsFromMongodb()
+    {
+
+        string _myConnectionString = MyAppData.MyConnectionString;
+
+        string strQuery;
+
+
+        //strQuery = "Declare @execution_id bigint" + Environment.NewLine;
+        //strQuery = strQuery + "EXEC[SSISDB].[catalog].[create_execution] @package_name = N'Package7.dtsx', @execution_id = @execution_id OUTPUT, @folder_name = N'Test', @project_name = N'Integration Services Import Data', @use32bitruntime = False, @reference_id = Null, @runinscaleout = False" + Environment.NewLine;
+        //strQuery = strQuery + "Select @execution_id" + Environment.NewLine;
+        //string strTweetFilePath_Param = @"C:\MyUploads\Tweets";
+        //strQuery = strQuery + "DECLARE @var0 sql_variant = N'" + strTweetFilePath_Param + "'" + Environment.NewLine;
+        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=30, @parameter_name=N'SourceFolderParam', @parameter_value=@var0" + Environment.NewLine;
+        //strQuery = strQuery + "DECLARE @var1 smallint = 1" + Environment.NewLine;
+        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=50, @parameter_name=N'LOGGING_LEVEL', @parameter_value=@var1" + Environment.NewLine;
+        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[start_execution] @execution_id" + Environment.NewLine;
+
+
+        //_myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        //SqlConnection cnn = new SqlConnection(_myConnectionString);
+        //SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        //cmd.CommandType = System.Data.CommandType.Text;
+        //cnn.Open();
+        //cmd.ExecuteNonQuery();
+        //cnn.Close();
+
+        strImportTweetsFromMongodbFlag = await SetTextboxFlag("Service Started");
+
+
+        string str = await MediaStat.Data.Services.MongodbImportTweetsClass.ImportTweetsfromMongodb();
+
+
+        await JsRuntime.InvokeAsync<Task>("alert", str);
+        return strImportTweetsFromMongodbFlag;
+    }
+
+    private async Task<string> SetTextboxFlag(string message)
+    {
+        return message;
+    }
+
+    private async Task<string> ConnectToMongoDb()
+    {
+        string str = "";
+
+        MongoClient dbClient = new MongoClient("mongodb://localhost:27017/admin");
+        //dbClient.GetDatabase("").GetCollection<>
+        var dbList = dbClient.ListDatabases().ToList();
+
+        //"The list of databases on this server
+        foreach (var db in dbList)
+        {
+            str += db + "\n";
+        }
+        return str;
+    }
+
+    private async Task<string> GetTweetsfromCollection()
+    {
+
+        string str = "";
+        try
+        {
+            var dbClient = new MongoClient("mongodb://127.0.0.1:27017");
+
+            IMongoDatabase db = dbClient.GetDatabase("crawling");
+
+            //var command = new BsonDocument { { "Tweets", 1 } };
+            //var result = db.RunCommand<BsonDocument>(command);
+            var tweets = db.GetCollection<BsonDocument>("Tweets");
+            var documents = tweets.Find(new BsonDocument()).ToList();
+            foreach (BsonDocument doc in documents)
+            {
+                str += doc.ToString() + Environment.NewLine;
+            }
+
+        }
+        catch (Exception ee)
+        {
+
+            await JsRuntime.InvokeAsync<Task>("alert", ee.Message);
+        }
+
+        return "";
+    }
+
+
+    private async Task SaveTweetFilePath_Click()
+    {
+        string _myConnectionString = MyAppData.MyConnectionString;
+        string strQuery;
+
+        if (!string.IsNullOrWhiteSpace(strTweetFilePath))
+        {
+            strQuery = "Select Count(*) from [dbo].[GeneralConfig]";
+            _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            SqlConnection cnn = new SqlConnection(_myConnectionString);
+            SqlCommand cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            int nbOfRows = (int)cmd.ExecuteScalar();
+            cnn.Close();
+
+            if (nbOfRows > 0)
+            {
+                strQuery = "UPDATE [dbo].[GeneralConfig] SET [TweetsFullPath] = '" + strTweetFilePath + "'";
+            }
+            else
+            {
+                strQuery = "INSERT INTO [dbo].[GeneralConfig] ([TweetsFullPath]) VALUES ('" + strTweetFilePath + "')";
+            }
+            //
+
+            cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            cmd.ExecuteNonQuery();
+            cnn.Close();
+
+            if (nbOfRows > 0)
+            {
+                await JsRuntime.InvokeAsync<Task>("alert", "Updated Successfully");
+            }
+            else
+            {
+                await JsRuntime.InvokeAsync<Task>("alert", "Inserted Successfully");
+            }
+
+
+        }
+    }
+
+    private async Task SaveProfilesFilePath_Click()
+    {
+        string _myConnectionString = MyAppData.MyConnectionString;
+        string strQuery;
+
+        if (!string.IsNullOrWhiteSpace(strProfilesFilePath))
+        {
+            strQuery = "Select Count(*) from [dbo].[GeneralConfig]";
+            _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            SqlConnection cnn = new SqlConnection(_myConnectionString);
+            SqlCommand cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            int nbOfRows = (int)cmd.ExecuteScalar();
+            cnn.Close();
+
+            if (nbOfRows > 0)
+            {
+                strQuery = "UPDATE [dbo].[GeneralConfig] SET [ProfilesFullPath] = '" + strProfilesFilePath + "'";
+            }
+            else
+            {
+                strQuery = "INSERT INTO [dbo].[GeneralConfig] ([ProfilesFullPath]) VALUES ('" + strProfilesFilePath + "')";
+            }
+            //
+
+            cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            cmd.ExecuteNonQuery();
+            cnn.Close();
+
+            if (nbOfRows > 0)
+            {
+                await JsRuntime.InvokeAsync<Task>("alert", "Updated Successfully");
+            }
+            else
+            {
+                await JsRuntime.InvokeAsync<Task>("alert", "Inserted Successfully");
+            }
+
+
+        }
+    }
+
+    private async Task<string> ImportProfilesFromMongodb()
+    {
+
+        string _myConnectionString = MyAppData.MyConnectionString;
+
+        string strQuery;
+
+
+        strImportProfilesFromMongodbFlag = await SetTextboxFlag("Service Started");
+
+
+        string str = await MediaStat.Data.Services.MongodbImportProfilesClass.ImportProfilesfromMongodb();
+
+
+        await JsRuntime.InvokeAsync<Task>("alert", str);
+        return strImportProfilesFromMongodbFlag;
+    }
+
+
+
+}

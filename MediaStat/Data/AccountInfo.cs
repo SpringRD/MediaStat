@@ -33,6 +33,10 @@ namespace MediaStat.Data
         [DisplayName("Location")]
         public int? Location { get; set; }
 
+        //[Column(TypeName = "int")]
+        [DisplayName("LocationDescription")]
+        public string LocationDescription { get; set; }
+
         //[Column(TypeName = "nvarchar(MAX)")]
         [DisplayName("Description")]
         public string Description { get; set; }
@@ -76,6 +80,15 @@ namespace MediaStat.Data
         //[Column(TypeName = "nvarchar(4000)")]
         [DisplayName("ProfileImageURL")]
         public string ProfileImageURL { get; set; }
+
+        [Column(TypeName = "nvarchar(4000)")]
+        [DisplayName("SpecialAccountId")]
+        public string SpecialAccountId { get; set; }
+
+        [DisplayName("LastChanged")]
+        public DateTime? LastChanged { get; set; }
+        //
+
 
         public ICollection<AccountLink> AccountLinks { get; set; }
     }

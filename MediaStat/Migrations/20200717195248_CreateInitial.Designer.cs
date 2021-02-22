@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MediaStat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200608111311_AddIsAdminColumn")]
-    partial class AddIsAdminColumn
+    [Migration("20200717195248_CreateInitial")]
+    partial class CreateInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -64,6 +64,9 @@ namespace MediaStat.Migrations
                     b.Property<int?>("Location")
                         .HasColumnType("int");
 
+                    b.Property<string>("LocationDescription")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("Party")
                         .HasColumnType("int");
 
@@ -75,6 +78,9 @@ namespace MediaStat.Migrations
 
                     b.Property<string>("ScreenName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SpecialAccountId")
+                        .HasColumnType("nvarchar(4000)");
 
                     b.HasKey("AccountId");
 

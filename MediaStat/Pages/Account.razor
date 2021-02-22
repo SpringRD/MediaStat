@@ -25,11 +25,27 @@ else
                 RowUpdate="@OnUpdateRow" ColumnWidth="200px">
         @*RowDoubleClick="@(args => OnRowDoubleClick(args))"*@
         <Columns>
-            <RadzenGridColumn TItem="AccountInfo" Property="ProfileImageURL" Title="ProfileImageURL">
-                <EditTemplate Context="acc">
-                    <RadzenTextBox @bind-Value="acc.ProfileImageURL" Style="width:100%; display: block" Name="ProfileImageURL" />
-                </EditTemplate>
+            <RadzenGridColumn TItem="AccountInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                <Template Context="acc">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="edit" Size="Radzen.ButtonSize.Medium" Click="@(args => EditAccount(acc))">
+                    </RadzenButton>
+                </Template>
+                @*<EditTemplate Context="acc">
+                <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(acc))">
+                </RadzenButton>
+            </EditTemplate>*@
             </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                <Template Context="acc">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="link" Size="Radzen.ButtonSize.Medium" Click="@(args => OpenAccountURL(acc))">
+                    </RadzenButton>
+                </Template>
+            </RadzenGridColumn>
+            @*<RadzenGridColumn TItem="AccountInfo" Property="ProfileImageURL" Title="ProfileImageURL">
+            <EditTemplate Context="acc">
+                <RadzenTextBox @bind-Value="acc.ProfileImageURL" Style="width:100%; display: block" Name="ProfileImageURL" />
+            </EditTemplate>
+        </RadzenGridColumn>*@
             <RadzenGridColumn TItem="AccountInfo" Property="Photo" Title="Photo" Sortable="false" Filterable="false">
                 <Template Context="acc">
                     <RadzenImage Path="@acc.ProfileImageURL" Style="width:200px" />
@@ -63,14 +79,21 @@ else
                     <RadzenDatePicker @bind-Value="acc.DateOfBirth" Style="width:100%" />
                 </EditTemplate>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="AccountInfo" Property="Location" Title="Location">
-                <Template Context="acc">
-                    <RadzenDropDown Disabled="true" @bind-Value="acc.Location" Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
-                </Template>
+            <RadzenGridColumn TItem="AccountInfo" Property="LocationDescription" Title="Location">
                 <EditTemplate Context="acc">
-                    <RadzenDropDown @bind-Value="acc.Location" Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                    <RadzenTextBox @bind-Value="acc.LocationDescription" Style="width:100%; display: block" Name="LocationDescription" />
+                    @*<RadzenRequiredValidator Text="LocationDescription is required" Component="LocationDescription" Popup="true" />*@
                 </EditTemplate>
             </RadzenGridColumn>
+
+            @*<RadzenGridColumn TItem="AccountInfo" Property="Location" Title="Location">
+            <Template Context="acc">
+                <RadzenDropDown Disabled="true" @bind-Value="acc.Location" Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+            </Template>
+            <EditTemplate Context="acc">
+                <RadzenDropDown @bind-Value="acc.Location" Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+            </EditTemplate>
+        </RadzenGridColumn>*@
             <RadzenGridColumn TItem="AccountInfo" Property="Party" Title="Party">
                 <Template Context="acc">
                     <RadzenDropDown Disabled="true" @bind-Value="acc.Party" Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
@@ -79,15 +102,18 @@ else
                     <RadzenDropDown @bind-Value="acc.Party" Data="@parties" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
                 </EditTemplate>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="AccountInfo" Property="AccountType" Title="AccountType">
-                <Template Context="acc">
-                    <RadzenDropDown Disabled="true" @bind-Value="acc.AccountType" Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
-                </Template>
-                <EditTemplate Context="acc">
-                    <RadzenDropDown @bind-Value="acc.AccountType" Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
-                </EditTemplate>
-            </RadzenGridColumn>
+            @*<RadzenGridColumn TItem="AccountInfo" Property="AccountType" Title="AccountType">
+            <Template Context="acc">
+                <RadzenDropDown Disabled="true" @bind-Value="acc.AccountType" Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+            </Template>
+            <EditTemplate Context="acc">
+                <RadzenDropDown @bind-Value="acc.AccountType" Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+            </EditTemplate>
+        </RadzenGridColumn>*@
             <RadzenGridColumn TItem="AccountInfo" Property="Classification1" Title="Classification1">
+                @*<FilterTemplate Context="acc">
+                <RadzenDropDown @bind-Value="@currentClassification1" Data="@classification1s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" Change="@(args => FilterByLookup(args))" />
+            </FilterTemplate>*@
                 <Template Context="acc">
                     <RadzenDropDown Disabled="true" @bind-Value="acc.Classification1" Data="@classification1s" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
                 </Template>
@@ -130,6 +156,15 @@ else
             </EditTemplate>
         </RadzenGridColumn>*@
 
+            <RadzenGridColumn TItem="AccountInfo" Property="LastChanged" Title="Last Changed">
+                <Template Context="data">
+                    @String.Format("{0:MM/dd/yyyy h:mm:ss tt}", data.LastChanged)
+                </Template>
+                <EditTemplate Context="acc">
+                    <RadzenDatePicker @bind-Value="acc.LastChanged" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+
 
             <RadzenGridColumn TItem="AccountInfo" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="100px">
                 <Template Context="acc">
@@ -155,16 +190,7 @@ else
                 </EditTemplate>
             </RadzenGridColumn>
 
-            <RadzenGridColumn TItem="AccountInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
-                <Template Context="acc">
-                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="edit" Size="Radzen.ButtonSize.Medium" Click="@(args => EditAccount(acc))">
-                    </RadzenButton>
-                </Template>
-                @*<EditTemplate Context="acc">
-                <RadzenButton ButtonStyle="Radzen.ButtonStyle.Danger" Icon="close" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteRow(acc))">
-                </RadzenButton>
-            </EditTemplate>*@
-            </RadzenGridColumn>
+
         </Columns>
     </RadzenGrid>
 
@@ -235,6 +261,16 @@ else
     IEnumerable<LookupDescription> classification2s;
 
     private string strNewLink = string.Empty;
+
+
+    int currentClassification1;
+
+    private void FilterByLookup(object lookupId)
+    {
+        accounts = from element in accounts
+                   where element.Classification1 == (int)lookupId
+                   select element;
+    }
 
 
     protected override async Task OnInitializedAsync()
@@ -340,6 +376,11 @@ else
     void EditAccount(AccountInfo acc)
     {
         navigationManager.NavigateTo("EditAccount/" + acc.AccountId.ToString());
+    }
+
+    void OpenAccountURL(AccountInfo acc)
+    {
+        navigationManager.NavigateTo("https://twitter.com/" + acc.ScreenName.ToString());
     }
 
 }

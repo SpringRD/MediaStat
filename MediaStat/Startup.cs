@@ -14,6 +14,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using MediaStat.Data.Services;
+using MediaStat.Services;
 
 namespace MediaStat
 {
@@ -22,6 +23,7 @@ namespace MediaStat
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            //MyAppData.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -40,7 +42,13 @@ namespace MediaStat
             services.AddScoped<LoginService>();
             services.AddBlazoredLocalStorage();
             services.AddOptions();
-            services.AddAuthorizationCore();
+            services.AddAuthorizationCore(); 
+            
+            services.AddScoped<IFileUpload,FileUpload>();
+
+            services.AddTransient<Services.BlazorTimer>();
+
+
             //services.AddScoped<AuthenticationService>(s =>
             //{
             //    return new AuthenticationService(URL);
@@ -51,6 +59,11 @@ namespace MediaStat
 
             //services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 
+
+
+            //services.AddSingleton<IConfiguration>(Configuration);
+            //services.AddTransient<MyClass>();
+            MyAppData.MyConnectionString = Configuration.GetConnectionString("DevConnection");
 
         }
 
@@ -72,9 +85,11 @@ namespace MediaStat
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
+
     }
 }

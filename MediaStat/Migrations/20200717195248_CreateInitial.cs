@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MediaStat.Migrations
 {
-    public partial class Create_Initial : Migration
+    public partial class CreateInitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,6 +18,7 @@ namespace MediaStat.Migrations
                     Joined = table.Column<DateTime>(nullable: true),
                     DateOfBirth = table.Column<DateTime>(nullable: true),
                     Location = table.Column<int>(nullable: true),
+                    LocationDescription = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Party = table.Column<int>(nullable: true),
                     AccountType = table.Column<int>(nullable: true),
@@ -28,7 +29,8 @@ namespace MediaStat.Migrations
                     Following = table.Column<int>(nullable: true),
                     Link = table.Column<string>(nullable: true),
                     AllLinks = table.Column<string>(nullable: true),
-                    ProfileImageURL = table.Column<string>(nullable: true)
+                    ProfileImageURL = table.Column<string>(nullable: true),
+                    SpecialAccountId = table.Column<string>(type: "nvarchar(4000)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -60,7 +62,8 @@ namespace MediaStat.Migrations
                     FirstName = table.Column<string>(maxLength: 50, nullable: true),
                     LastName = table.Column<string>(maxLength: 50, nullable: true),
                     AccessToken = table.Column<string>(maxLength: 4000, nullable: true),
-                    Id = table.Column<string>(maxLength: 4000, nullable: true)
+                    Id = table.Column<string>(maxLength: 4000, nullable: true),
+                    IsAdmin = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

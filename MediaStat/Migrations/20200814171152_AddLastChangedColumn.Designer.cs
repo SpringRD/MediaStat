@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MediaStat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200527124306_Create_Initial")]
-    partial class Create_Initial
+    [Migration("20200814171152_AddLastChangedColumn")]
+    partial class AddLastChangedColumn
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -58,11 +58,17 @@ namespace MediaStat.Migrations
                     b.Property<DateTime?>("Joined")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("LastChanged")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Link")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Location")
                         .HasColumnType("int");
+
+                    b.Property<string>("LocationDescription")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Party")
                         .HasColumnType("int");
@@ -75,6 +81,9 @@ namespace MediaStat.Migrations
 
                     b.Property<string>("ScreenName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SpecialAccountId")
+                        .HasColumnType("nvarchar(4000)");
 
                     b.HasKey("AccountId");
 
@@ -176,6 +185,9 @@ namespace MediaStat.Migrations
                         .HasColumnType("nvarchar(4000)")
                         .HasMaxLength(4000);
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
@@ -252,7 +264,7 @@ namespace MediaStat.Migrations
             modelBuilder.Entity("MediaStat.Data.LookupDescription", b =>
                 {
                     b.HasOne("MediaStat.Data.LookupCode", "LokkupCode")
-                        .WithMany()
+                        .WithMany("LookupDescriptions")
                         .HasForeignKey("LookupCodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
