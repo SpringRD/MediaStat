@@ -47,12 +47,14 @@ namespace MediaStat.Data.Services
                 query = "SELECT [AccountId],[ScreenName],[SpecialAccountId] FROM [MediaStat].[dbo].[Accounts]";
                 myCommand1 = new SqlCommand(query, myADONETConnection);
                 SqlDataReader drAccounts = myCommand1.ExecuteReader(CommandBehavior.CloseConnection);
+                dtAccounts = new DataTable();
                 dtAccounts.Load(drAccounts);
 
                 query = "SELECT [Id],[DayDate] FROM [MediaStat].[dbo].[TweetDateDim]";
                 myADONETConnection.Open();
                 myCommand1 = new SqlCommand(query, myADONETConnection);
                 SqlDataReader drDates = myCommand1.ExecuteReader(CommandBehavior.CloseConnection);
+                dtDates = new DataTable();
                 dtDates.Load(drDates);
 
 
@@ -70,9 +72,9 @@ namespace MediaStat.Data.Services
                     documents = GetTweetsfromCollection(false);
                 }
 
+
                 foreach (var doc in documents)
                 {
-
                     string link1 = null; //string.Empty;
                     string link2 = null; //string.Empty;
                     string hashtag1 = null; // string.Empty;
@@ -81,42 +83,51 @@ namespace MediaStat.Data.Services
                     string mention1 = null; //string.Empty;
                     string mention2 = null; //string.Empty;
 
-                    var urlArray = (BsonArray)doc[11];
 
-                    if (urlArray != null && urlArray.Count == 1)
+                    if (doc.Count() > 11)
                     {
-                        link1 = urlArray[0]["url"].ToString();
-                    }
-                    else if (urlArray != null && urlArray.Count == 2)
-                    {
-                        link2 = urlArray[1]["url"].ToString();
+                        var urlArray = (BsonArray)doc[11];
 
-                    }
+                        if (urlArray != null && urlArray.Count == 1)
+                        {
+                            link1 = urlArray[0]["url"].ToString();
+                        }
+                        else if (urlArray != null && urlArray.Count == 2)
+                        {
+                            link2 = urlArray[1]["url"].ToString();
 
-
-                    var hashtagArray = (BsonArray)doc[10];
-                    if (hashtagArray != null && hashtagArray.Count > 0)
-                    {
-                        hashtag1 = hashtagArray[0]["text"].ToString();
-                    }
-                    else if (hashtagArray != null && hashtagArray.Count > 1)
-                    {
-                        hashtag2 = hashtagArray[1]["text"].ToString();
-                    }
-                    else if (hashtagArray != null && hashtagArray.Count > 2)
-                    {
-                        hashtag3 = hashtagArray[2]["text"].ToString();
+                        }
                     }
 
 
-                    var mentionArray = (BsonArray)doc[9];
-                    if (mentionArray != null && mentionArray.Count > 0)
+                    if (doc.Count() > 10)
                     {
-                        mention1 = mentionArray[0]["screen_name"].ToString();
+                        var hashtagArray = (BsonArray)doc[10];
+                        if (hashtagArray != null && hashtagArray.Count > 0)
+                        {
+                            hashtag1 = hashtagArray[0]["text"].ToString();
+                        }
+                        else if (hashtagArray != null && hashtagArray.Count > 1)
+                        {
+                            hashtag2 = hashtagArray[1]["text"].ToString();
+                        }
+                        else if (hashtagArray != null && hashtagArray.Count > 2)
+                        {
+                            hashtag3 = hashtagArray[2]["text"].ToString();
+                        }
                     }
-                    else if (mentionArray != null && mentionArray.Count > 1)
+
+                    if (doc.Count() > 9)
                     {
-                        mention2 = mentionArray[1]["screen_name"].ToString();
+                        var mentionArray = (BsonArray)doc[9];
+                        if (mentionArray != null && mentionArray.Count > 0)
+                        {
+                            mention1 = mentionArray[0]["screen_name"].ToString();
+                        }
+                        else if (mentionArray != null && mentionArray.Count > 1)
+                        {
+                            mention2 = mentionArray[1]["screen_name"].ToString();
+                        }
                     }
 
 
@@ -131,30 +142,40 @@ namespace MediaStat.Data.Services
 
                     if (!string.IsNullOrWhiteSpace(mention1))
                     {
-                        //var acc = from element in dtAccounts
-                        //          where element
                         var results = (from myRow in dtAccounts.AsEnumerable()
-                                       where string.Compare(myRow.Field<string>("ScreenName"), mention1) == 0
+                                       where string.Compare(myRow.Field<string>("SpecialAccountId"), mention1) == 0
                                        select myRow).ToList();
-                        if (results.Count == 0)
+                        if (results.Count > 0)
                         {
-                            mentionId1 = InsertAccountByScreenName(myADONETConnection, mention1);
-                            RefreshAccounts(myADONETConnection);
+                            mentionId1 = results[0].Field<int>("AccountId");
                         }
                     }
 
 
-                    if (!string.IsNullOrWhiteSpace(mention2))
-                    {
-                        var results1 = (from myRow in dtAccounts.AsEnumerable()
-                                        where string.Compare(myRow.Field<string>("ScreenName"), mention2) == 0
-                                        select myRow).ToList();
-                        if (results1.Count == 0)
-                        {
-                            mentionId2 = InsertAccountByScreenName(myADONETConnection, mention2);
-                            RefreshAccounts(myADONETConnection);
-                        }
-                    }
+                    //if (!string.IsNullOrWhiteSpace(mention1))
+                    //{
+                    //    var results = (from myRow in dtAccounts.AsEnumerable()
+                    //                   where string.Compare(myRow.Field<string>("ScreenName").ToLower(), mention1.ToLower()) == 0
+                    //                   select myRow).ToList();
+                    //    if (results.Count == 0)
+                    //    {
+                    //        mentionId1 = InsertAccountByScreenName(myADONETConnection, mention1);
+                    //        RefreshAccounts(myADONETConnection);
+                    //    }
+                    //}
+
+
+                    //if (!string.IsNullOrWhiteSpace(mention2))
+                    //{
+                    //    var results1 = (from myRow in dtAccounts.AsEnumerable()
+                    //                    where string.Compare(myRow.Field<string>("ScreenName").ToLower(), mention2.ToLower()) == 0
+                    //                    select myRow).ToList();
+                    //    if (results1.Count == 0)
+                    //    {
+                    //        mentionId2 = InsertAccountByScreenName(myADONETConnection, mention2);
+                    //        RefreshAccounts(myADONETConnection);
+                    //    }
+                    //}
 
 
                     if (hashtag1 != null)
@@ -222,8 +243,9 @@ namespace MediaStat.Data.Services
                         }
                         else
                         {
-                            string screenName = await UpdateProfileData(doc[2].ToString(), "");
-                            AccountId = GetAccountByScreenName(myADONETConnection, screenName);
+                            //string screenName = await UpdateProfileData(doc[2].ToString(), "");
+                            //AccountId = GetAccountByScreenName(myADONETConnection, screenName);
+                            AccountId = await UpdateProfileScreenNameOnly(doc[2].ToString());
                             RefreshAccounts(myADONETConnection);
                         }
                     }
@@ -283,7 +305,7 @@ namespace MediaStat.Data.Services
                             myADONETConnection.Close();
 
                     }
-                    _lastId = doc[2].ToString();
+                    _lastId = doc[0].ToString();
                     counter++;
                 }
 
@@ -644,6 +666,36 @@ namespace MediaStat.Data.Services
             {
                 return string.Empty;
             }
+        }
+
+
+        public static async Task<int?> UpdateProfileScreenNameOnly(string id)
+        {
+            string _myConnectionString = MyAppData.MyConnectionString;
+            string strQuery;
+            int modified = 0;
+
+            try
+            {
+                _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
+                //strQuery = "INSERT INTO [dbo].[Accounts] ([ScreenName]) VALUES (@ScreenName)";
+                strQuery = "INSERT INTO Accounts(SpecialAccountId) output INSERTED.AccountId VALUES(@SpecialAccountId)";
+                SqlConnection cnn = new SqlConnection(_myConnectionString);
+                SqlCommand cmd = new SqlCommand(strQuery, cnn);
+                cmd.Parameters.AddWithValue("@SpecialAccountId", id);
+                cmd.Parameters.AddWithValue("@LastChanged", DateTime.Now);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cnn.Open();
+                //cmd.ExecuteNonQuery();
+                modified = (int)cmd.ExecuteScalar();
+                cnn.Close();
+            }
+            catch (Exception e)
+            {
+                return modified;
+            }
+            return modified;
         }
 
 

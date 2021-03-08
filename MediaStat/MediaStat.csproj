@@ -44,6 +44,7 @@
     </PackageReference>
     <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
     <PackageReference Include="Radzen.Blazor" Version="2.9.1" />
+    <PackageReference Include="SqlTableDependency" Version="8.5.8" />
   </ItemGroup>
 
 </Project>

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using MediaStat.Data.Services;
 using MediaStat.Services;
+//using static MediaStat.Services.TweetsChangeEventArgs;
 
 namespace MediaStat
 {
@@ -42,8 +43,12 @@ namespace MediaStat
             services.AddScoped<LoginService>();
             services.AddBlazoredLocalStorage();
             services.AddOptions();
-            services.AddAuthorizationCore(); 
-            
+            services.AddAuthorizationCore();
+
+
+            //services.AddSingleton<ITableChangeBroadcastService, TableChangeBroadcastService>();
+
+
             services.AddScoped<IFileUpload,FileUpload>();
 
             services.AddTransient<Services.BlazorTimer>();

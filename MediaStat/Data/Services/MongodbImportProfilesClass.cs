@@ -46,141 +46,54 @@ namespace MediaStat.Data.Services
                 query = "SELECT [AccountId],[ScreenName],[SpecialAccountId] FROM [MediaStat].[dbo].[Accounts]";
                 myCommand1 = new SqlCommand(query, myADONETConnection);
                 SqlDataReader drAccounts = myCommand1.ExecuteReader(CommandBehavior.CloseConnection);
+                dtAccounts = new DataTable();
                 dtAccounts.Load(drAccounts);
 
 
                 //var documents = GetTweetsfromCollection();
 
                 List<BsonDocument> documents;
-                //_lastId = GetLastMongoImportedId(myADONETConnection);
-                //if (string.IsNullOrEmpty(_lastId))
-                //{
-                documents = GetProfilesfromCollection(true);
-                //}
-                //else
-                //{
-                //    documents = GetProfilesfromCollection(false);
-                //}
+                _lastId = GetLastMongoImportedId(myADONETConnection);
+                if (string.IsNullOrEmpty(_lastId))
+                {
+                    documents = GetProfilesfromCollection(true);
+                }
+                else
+                {
+                    documents = GetProfilesfromCollection(false);
+                }
 
                 foreach (var doc in documents)
                 {
-
-
-                    if (doc[3] != null)
+                    if (doc["screen_name"] != null)
                     {
-                        var findAccount = (from myRow in dtAccounts.AsEnumerable()
-                                           where string.Compare(myRow.Field<string>("ScreenName"), doc[3].ToString()) == 0
+                        var findAccountByScreenName = (from myRow in dtAccounts.AsEnumerable()
+                                           where string.Compare(myRow.Field<string>("ScreenName"), doc["screen_name"].ToString()) == 0
                                            select myRow).ToList();
-                        if (findAccount.Count == 0)
+
+                        var findAccountById = (from myRow in dtAccounts.AsEnumerable()
+                                               where string.Compare(myRow.Field<string>("SpecialAccountId"), doc["id"].ToString()) == 0
+                                               select myRow).ToList();
+
+                        if (findAccountByScreenName.Count == 0 && findAccountById.Count == 0)
                         {
                             InsertAccountByScreenName(myADONETConnection, doc);
                         }
-                        else
+                        else if(findAccountByScreenName.Count > 0)
                         {
                             UpdateAccountByScreenName(myADONETConnection, doc);
                         }
+                        else if (findAccountById.Count > 0)
+                        {
+                            UpdateAccountByAccountId(myADONETConnection, doc);
+                        }
+                        else
+                        {
+
+                        }
+
+                            _lastId = doc[0].ToString();
                     }
-
-                //    var urlArray = (BsonArray)doc[11];
-
-
-                //    if (doc[5] != null)
-                //    {
-
-
-                //        //DateTime dt = DateTime.ParseExact(doc[5].ToString(), "yyyy-MM-dd HH:mm:ss", null);
-                //        string strDt = doc[5].ToString();
-                //        if (strDt.Contains("+0000")) strDt = strDt.Remove(strDt.IndexOf("+"), 6);
-                //        DateTime dt = DateTime.ParseExact(strDt, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InvariantCulture);
-                //        string s = dt.ToString("yyyy-MM-dd", null);
-                //        DateTime dtTweetDate = DateTime.ParseExact(s, "yyyy-MM-dd", null);
-
-                //        var tweetDate = (from myRow in dtDates.AsEnumerable()
-                //                         where myRow.Field<DateTime>("DayDate") == dtTweetDate
-                //                         select myRow).ToList();
-                //        if (tweetDate.Count != 0)
-                //        {
-                //            //dateId = tweetDate[0].Field<int>("Id");
-                //        }
-                //    }
-
-
-
-                //    int? AccountId = null;
-                //    string FullText = null;
-                //    string SpecialText = null;
-                //    string TweetSpecialId = null;
-                //    int? LikesCount = null;
-                //    int? RetweetCount = null;
-                //    int? CommentsCount = null;
-
-                //    if (doc[2] != null)
-                //    {
-                //        var findAccount = (from myRow in dtAccounts.AsEnumerable()
-                //                           where string.Compare(myRow.Field<string>("SpecialAccountId"), doc[2].ToString()) == 0
-                //                           select myRow).ToList();
-                //        if (findAccount.Count != 0)
-                //        {
-                //            AccountId = findAccount[0].Field<int>("AccountId");
-                //        }
-                //        else
-                //        {
-                //            //string screenName = await UpdateProfileData(doc[2].ToString(), "");
-                //            //AccountId = GetAccountByScreenName(myADONETConnection, screenName);
-                //            RefreshAccounts(myADONETConnection);
-                //        }
-                //    }
-
-                //    if (doc[4] != null)
-                //    {
-                //        FullText = doc[4].ToString();
-                //        SpecialText = doc[4].ToString();
-                //    }
-
-
-                //    if (doc[1] != null)
-                //    {
-                //        TweetSpecialId = doc[1].ToString();
-                //    }
-
-                //    if (doc[1] != null)
-                //    {
-                //        LikesCount = int.Parse(doc[7].ToString());
-                //    }
-                //    if (doc[1] != null)
-                //    {
-                //        RetweetCount = int.Parse(doc[6].ToString());
-                //    }
-                //    if (doc[1] != null)
-                //    {
-                //        CommentsCount = int.Parse(doc[8].ToString());
-                //    }
-
-
-                //    //
-                //    string insertTweetQuery = "INSERT INTO [dbo].[Accounts] ([ScreenName],[ProfileName],[Joined],[DateOfBirth],[LocationDescription],[AccountUrl],[Followers],[Following],[ProfileImageURL],[SpecialAccountId]) " +
-                //        "VALUES (@ScreenName,@ProfileName,@Joined,@DateOfBirth,@LocationDescription,@AccountUrl,@Followers,@Following,@ProfileImageURL,@SpecialAccountId)";
-
-                //    using (SqlCommand cmd = new SqlCommand(insertTweetQuery, myADONETConnection))
-                //    {
-                //        cmd.Parameters.AddWithValue("@AccountId", (AccountId != null) ? AccountId : (object)DBNull.Value);
-                //        cmd.Parameters.AddWithValue("@FullText", (FullText != null) ? FullText : (object)DBNull.Value);
-                //        cmd.Parameters.AddWithValue("@SpecialText", (SpecialText != null) ? SpecialText : (object)DBNull.Value);
-                //        cmd.Parameters.AddWithValue("@TweetSpecialId", (TweetSpecialId != null) ? TweetSpecialId : (object)DBNull.Value);
-                //        cmd.Parameters.AddWithValue("@LikesCount", (LikesCount != null) ? LikesCount : (object)DBNull.Value);
-                //        cmd.Parameters.AddWithValue("@RetweetCount", (RetweetCount != null) ? RetweetCount : (object)DBNull.Value);
-                //        cmd.Parameters.AddWithValue("@CommentsCount", (CommentsCount != null) ? CommentsCount : (object)DBNull.Value);
-                //        if (myADONETConnection.State == System.Data.ConnectionState.Closed)
-                //            myADONETConnection.Open();
-
-                //        cmd.ExecuteNonQuery();
-
-                //        if (myADONETConnection.State == System.Data.ConnectionState.Open)
-                //            myADONETConnection.Close();
-
-                //    }
-                //    _lastId = doc[2].ToString();
-                //    counter++;
                 }
 
             }
@@ -199,19 +112,19 @@ namespace MediaStat.Data.Services
 
         private static void InsertAccountByScreenName(SqlConnection con, BsonDocument doc)
         {
-            string imageProfile = doc[10].ToString().Replace("_normal", "_400x400");
+            string imageProfile = doc["profile_image_url"].ToString().Replace("_normal", "_400x400");
 
             //using (SqlCommand cmd = new SqlCommand("INSERT INTO Accounts(ScreenName,ProfileName,LocationDescription,Description,Followers,Following,ProfileImageURL,SpecialAccountId) VALUES(@ScreenName,@ProfileName,@LocationDescription,@Description,@Followers,@Following,@ProfileImageURL,@SpecialAccountId)", con))
             using (SqlCommand cmd = new SqlCommand("INSERT INTO Accounts(ScreenName,ProfileName,LocationDescription,Description,Followers,Following,SpecialAccountId,ProfileImageURL) VALUES(@ScreenName,@ProfileName,@LocationDescription,@Description,@Followers,@Following,@SpecialAccountId,@ProfileImageURL)", con))
             {
-                cmd.Parameters.AddWithValue("@ScreenName", doc[3].ToString());
-                cmd.Parameters.AddWithValue("@ProfileName", doc[2].ToString());
-                cmd.Parameters.AddWithValue("@LocationDescription", doc[4].ToString());
-                cmd.Parameters.AddWithValue("@Description", doc[5].ToString());
-                cmd.Parameters.AddWithValue("@Followers", int.Parse(doc[6].ToString()));
-                cmd.Parameters.AddWithValue("@Following", int.Parse(doc[7].ToString()));
+                cmd.Parameters.AddWithValue("@ScreenName", doc["screen_name"].ToString());
+                cmd.Parameters.AddWithValue("@ProfileName", doc["name"].ToString());
+                cmd.Parameters.AddWithValue("@LocationDescription", doc["location"].ToString());
+                cmd.Parameters.AddWithValue("@Description", doc["description"].ToString());
+                cmd.Parameters.AddWithValue("@Followers", int.Parse(doc["followers_count"].ToString()));
+                cmd.Parameters.AddWithValue("@Following", int.Parse(doc["favourites_count"].ToString()));
                 cmd.Parameters.AddWithValue("@ProfileImageURL", imageProfile);
-                cmd.Parameters.AddWithValue("@SpecialAccountId", doc[1].ToString());
+                cmd.Parameters.AddWithValue("@SpecialAccountId", doc["id"].ToString());
                 if (con.State == System.Data.ConnectionState.Closed)
                     con.Open();
 
@@ -226,19 +139,19 @@ namespace MediaStat.Data.Services
 
         private static void UpdateAccountByScreenName(SqlConnection con, BsonDocument doc)
         {
-            string imageProfile = doc[10].ToString().Replace("_normal", "_400x400");
+            string imageProfile = doc["profile_image_url"].ToString().Replace("_normal", "_400x400");
 
             //using (SqlCommand cmd = new SqlCommand("INSERT INTO Accounts(ScreenName,ProfileName,LocationDescription,Description,Followers,Following,ProfileImageURL,SpecialAccountId) VALUES(@ScreenName,@ProfileName,@LocationDescription,@Description,@Followers,@Following,@ProfileImageURL,@SpecialAccountId)", con))
             using (SqlCommand cmd = new SqlCommand("Update Accounts SET ProfileName= @ProfileName,LocationDescription= @LocationDescription,Description= @Description,Followers= @Followers,Following= @Following,SpecialAccountId= @SpecialAccountId,ProfileImageURL= @ProfileImageURL  WHERE ScreenName = @ScreenName", con))
             {
-                cmd.Parameters.AddWithValue("@ScreenName", doc[3].ToString());
-                cmd.Parameters.AddWithValue("@ProfileName", doc[2].ToString());
-                cmd.Parameters.AddWithValue("@LocationDescription", doc[4].ToString());
-                cmd.Parameters.AddWithValue("@Description", doc[5].ToString());
-                cmd.Parameters.AddWithValue("@Followers", int.Parse(doc[6].ToString()));
-                cmd.Parameters.AddWithValue("@Following", int.Parse(doc[7].ToString()));
+                cmd.Parameters.AddWithValue("@ScreenName", doc["screen_name"].ToString());
+                cmd.Parameters.AddWithValue("@ProfileName", doc["name"].ToString());
+                cmd.Parameters.AddWithValue("@LocationDescription", doc["location"].ToString());
+                cmd.Parameters.AddWithValue("@Description", doc["description"].ToString());
+                cmd.Parameters.AddWithValue("@Followers", int.Parse(doc["followers_count"].ToString()));
+                cmd.Parameters.AddWithValue("@Following", int.Parse(doc["favourites_count"].ToString()));
                 cmd.Parameters.AddWithValue("@ProfileImageURL", imageProfile);
-                cmd.Parameters.AddWithValue("@SpecialAccountId", doc[1].ToString());
+                cmd.Parameters.AddWithValue("@SpecialAccountId", doc["id"].ToString());
                 if (con.State == System.Data.ConnectionState.Closed)
                     con.Open();
 
@@ -246,8 +159,32 @@ namespace MediaStat.Data.Services
 
                 if (con.State == System.Data.ConnectionState.Open)
                     con.Close();
+            }
+        }
 
 
+        private static void UpdateAccountByAccountId(SqlConnection con, BsonDocument doc)
+        {
+            string imageProfile = doc["profile_image_url"].ToString().Replace("_normal", "_400x400");
+
+            //using (SqlCommand cmd = new SqlCommand("INSERT INTO Accounts(ScreenName,ProfileName,LocationDescription,Description,Followers,Following,ProfileImageURL,SpecialAccountId) VALUES(@ScreenName,@ProfileName,@LocationDescription,@Description,@Followers,@Following,@ProfileImageURL,@SpecialAccountId)", con))
+            using (SqlCommand cmd = new SqlCommand("Update Accounts SET ProfileName= @ProfileName,LocationDescription= @LocationDescription,Description= @Description,Followers= @Followers,Following= @Following,ScreenName = @ScreenName,ProfileImageURL= @ProfileImageURL  WHERE SpecialAccountId = @SpecialAccountId", con))
+            {
+                cmd.Parameters.AddWithValue("@ScreenName", doc["screen_name"].ToString());
+                cmd.Parameters.AddWithValue("@ProfileName", doc["name"].ToString());
+                cmd.Parameters.AddWithValue("@LocationDescription", doc["location"].ToString());
+                cmd.Parameters.AddWithValue("@Description", doc["description"].ToString());
+                cmd.Parameters.AddWithValue("@Followers", int.Parse(doc["followers_count"].ToString()));
+                cmd.Parameters.AddWithValue("@Following", int.Parse(doc["favourites_count"].ToString()));
+                cmd.Parameters.AddWithValue("@ProfileImageURL", imageProfile);
+                cmd.Parameters.AddWithValue("@SpecialAccountId", doc["id"].ToString());
+                if (con.State == System.Data.ConnectionState.Closed)
+                    con.Open();
+
+                cmd.ExecuteNonQuery();
+
+                if (con.State == System.Data.ConnectionState.Open)
+                    con.Close();
             }
         }
 
@@ -341,7 +278,7 @@ namespace MediaStat.Data.Services
         private static string GetLastMongoImportedId(SqlConnection con)
         {
             string lastId;
-            using (SqlCommand cmd = new SqlCommand("SELECT [LastImportedMongoId] FROM [MediaStat].[dbo].[GeneralConfig]", con))
+            using (SqlCommand cmd = new SqlCommand("SELECT [LastImportedProfilesMongoId] FROM [MediaStat].[dbo].[GeneralConfig]", con))
             {
                 if (con.State == System.Data.ConnectionState.Closed)
                     con.Open();
@@ -366,7 +303,7 @@ namespace MediaStat.Data.Services
         private static void UpdateLastMongoImportedId(SqlConnection con)
         {
             string lastId;
-            using (SqlCommand cmd = new SqlCommand("Update [MediaStat].[dbo].[GeneralConfig] SET [LastImportedMongoId] = '" + _lastId + "'", con))
+            using (SqlCommand cmd = new SqlCommand("Update [MediaStat].[dbo].[GeneralConfig] SET [LastImportedProfilesMongoId] = '" + _lastId + "'", con))
             {
                 if (con.State == System.Data.ConnectionState.Closed)
                     con.Open();
