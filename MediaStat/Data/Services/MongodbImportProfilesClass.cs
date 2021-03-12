@@ -12,6 +12,7 @@ using MongoDB.Bson;
 using Microsoft.JSInterop;
 using System.Globalization;
 using LinqToTwitter;
+using Serilog;
 
 namespace MediaStat.Data.Services
 {
@@ -32,6 +33,8 @@ namespace MediaStat.Data.Services
 
             try
             {
+
+                Log.Information($"START IMPORTING PROFILES FROM MONGO AT: " + DateTime.Now.ToString());
 
                 //Declare Variables
                 string query;
@@ -100,10 +103,13 @@ namespace MediaStat.Data.Services
             catch (Exception exception)
             {
                 int c = counter;
+                Log.Information(exception.StackTrace);
             }
             finally
             {
                 UpdateLastMongoImportedId(myADONETConnection);
+                Log.Information($"The last id imported is ( " + _lastId + ") : " + DateTime.Now.ToString());
+                Log.Information($"END IMPORTING PROFILES FROM MONGO AT: " + DateTime.Now.ToString());
                 if (myADONETConnection.State == ConnectionState.Open) myADONETConnection.Close();
             }
             return "Finished";

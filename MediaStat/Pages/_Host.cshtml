@@ -12,13 +12,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MediaStat</title>
-    <base href="~/" />
+    <base href="~/" /> 
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css">
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
     <script src="_content/BlazorInputFile/inputfile.js"></script>
     <script>window.setElementText = (element, text) => element.innerText = text;</script>
+    <script>
+        var input = document.getElementById("myInput");
+
+        // Execute a function when the user releases a key on the keyboard
+        input.addEventListener("keyup", function (event) {
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById("myBtn").click();
+            }
+        });
+    </script>
 </head>
 <body>
     <app>

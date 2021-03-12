@@ -13,7 +13,7 @@
 @using System.Threading;
 
 @*@inject TweetsChangeEventArgs.ITableChangeBroadcastService TweetsService
-@implements IDisposable*@
+    @implements IDisposable*@
 
 
 @inject IFileUpload fileUpload
@@ -22,10 +22,36 @@
 
 <h3>ServicesPage</h3>
 
+
+<style>
+    table {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+    }
+
+    th {
+        background-color: #4287f5;
+        color: white;
+    }
+
+    th,
+    td {
+        width: 300px;
+        text-align: center;
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    h2 {
+        color: #4287f5;
+    }
+</style>
+
 @*<div>
         <RadzenButton Text="Deploy Project" Click="@DeployProject_Click"></RadzenButton>
         <RadzenTextBox ReadOnly="true" Value="@strDeployFlag"> </RadzenTextBox>
     </div>*@
+
 
 <div class="row">
     @*<div class="col-md-6">
@@ -98,16 +124,40 @@
     </div>
 </div>
 
-<RadzenButton Text="Import profiles from CSV file" Click="@InstallService_Click"></RadzenButton>
+
+<div id="form" style="width:350px;">
+    <fieldset>
+        <legend style="color:blue;font-weight:bold;">General Services</legend>
+        <table>
+            <tr>
+                <td>
+                    <RadzenButton Text="Import profiles from CSV file" Click="@InstallService_Click"></RadzenButton>
+                </td>
+            </tr>
+            <tr>
+                <td><RadzenButton Text="Update profiles" Click="@UpdateProfiles"></RadzenButton></td>
+            </tr>
+            <tr>
+                <td>
+                    <RadzenButton Text="Update profiles Classifications" Click="@UpdateProfilesSpecialClassifications"></RadzenButton>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <RadzenButton Text="Import Tweets from CSV file" Click="@ImportTweets"></RadzenButton>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+</div>
+
+
+@*<RadzenButton Text="Import profiles from CSV file" Click="@InstallService_Click"></RadzenButton>
 <RadzenTextBox ReadOnly="true" Value="@strFlag"> </RadzenTextBox>
 <br>
 <br>
 <RadzenButton Text="Update profiles" Click="@UpdateProfiles"></RadzenButton>
 <RadzenTextBox ReadOnly="true" Value="@strUpdateFlag"> </RadzenTextBox>
-<br>
-<br>
-<RadzenButton Text="Import profiles From Mongodb" Click="@ImportProfilesFromMongodb"></RadzenButton>
-<RadzenTextBox Name="txtImportProfilesFromMongodbFlag" ReadOnly="true" Value="@strImportProfilesFromMongodbFlag"> </RadzenTextBox>
 <br>
 <br>
 <RadzenButton Text="Update profiles Classifications" Click="@UpdateProfilesSpecialClassifications"></RadzenButton>
@@ -118,38 +168,99 @@
 <RadzenTextBox ReadOnly="true" Value="@strImportTweetsFlag"> </RadzenTextBox>
 <br>
 <br>
-<RadzenButton Text="Import Tweets From Mongodb" Click="@ImportTweetsFromMongodb"></RadzenButton>
-<RadzenTextBox Name="txtImportTweetsFromMongodbFlag" ReadOnly="true" Value="@strImportTweetsFromMongodbFlag"> </RadzenTextBox>
+<RadzenButton Text="Import profiles From Mongodb" Click="@ImportProfilesFromMongodb"></RadzenButton>
+<RadzenTextBox Name="txtImportProfilesFromMongodbFlag" ReadOnly="true" Value="@strImportProfilesFromMongodbFlag"> </RadzenTextBox>
 <br>
 <br>
-<RadzenButton Text="Test" Click="@Test"></RadzenButton>
+<RadzenButton Disabled="@isSubmitting" Text="Import Tweets From Mongodb" Click="@ImportTweetsFromMongodb"></RadzenButton>
+<RadzenTextBox Name="txtImportTweetsFromMongodbFlag" ReadOnly="true" @bind-Value="@strImportTweetsFromMongodbFlag"> </RadzenTextBox>
+<br>
+<br>
+<RadzenButton Disabled="@isSubmitting" Text="ResetDatabase" Click="@ResetDatabase"></RadzenButton>*@
+<br>
+<br>
+
+
+<div id="form" style="width:350px;">
+    <fieldset>
+        <legend style="color:blue;font-weight:bold;">Mongo Services</legend>
+        <table>
+            <tr>
+                <td><RadzenButton Disabled="@isSubmitting" Text="Import profiles From Mongodb" Click="@ImportProfilesFromMongodb"></RadzenButton></td>
+                <br>
+            </tr>
+            <tr>
+                <td><RadzenButton Disabled="@isSubmitting" Text="Import Tweets From Mongodb" Click="@ImportTweetsFromMongodb"></RadzenButton></td>
+                <br>
+            </tr>
+            <tr>
+                <td>
+                    <RadzenButton Disabled="@isSubmitting" Text="ResetDatabase" Click="@ResetDatabase"></RadzenButton>
+                    <br>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+</div>
+
+
+@*<EditForm Model="@strImportTweetsFromMongodbFlag" OnValidSubmit="OnSubmit">
+        <InputText @bind-Value="@strImportTweetsFromMongodbFlag" />
+
+        👇 Disable the button while submitting the form
+        <button type="submit" disabled=@isSubmitting>Save</button>
+    </EditForm>*@
+
+@if (isSubmitting == true)
+{
+<div class="alert alert-info">Process in progress......</div>
+}
+
+
+@*@while (!isSubmitting)
+    {
+        if (progress % 2 == 0)
+        {
+            <div class="alert alert-info">Importing......</div>
+            progress++;
+        }
+        else
+        {
+            progress++;
+        }
+    }*@
+
+
+@*<input type="button" value="I'm disabled" disabled="@DisableButtons" onclick="@ImportTweetsFromMongodb()">*@
+
+@*<RadzenButton Text="Test" Click="@Test"></RadzenButton>*@
 
 
 @*<br>
-<br>
-<h1>Stock prices</h1>
+    <br>
+    <h1>Stock prices</h1>
 
-<p>Immediate client notification on record table change with Blazor</p>
+    <p>Immediate client notification on record table change with Blazor</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var tw in tweets)
-        {
+    <table class="table">
+        <thead>
             <tr>
-                <td>@tw.FullText</td>
-                <td>@tw.AccountId</td>
-                <td>@tw.SpecialText</td>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Price</th>
             </tr>
-        }
-    </tbody>
-</table>*@
+        </thead>
+        <tbody>
+            @foreach (var tw in tweets)
+            {
+                <tr>
+                    <td>@tw.FullText</td>
+                    <td>@tw.AccountId</td>
+                    <td>@tw.SpecialText</td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
 
 
 @*<RadzenButton Text="Call Api" Click="@((args) => UpdateProfileData(acc))"></RadzenButton>*@
@@ -168,11 +279,47 @@
 
     private MyClass _myClass;
 
-    int progress;
+    int progress = 0;
     string info;
     double @value = 0;
 
+    bool DisableButtons = false;
+
     IFileListEntry file;
+
+
+    bool isSubmitting;
+
+    async Task OnSubmit()
+    {
+        // We don't need any synchronization primitive (lock) as there is only one thread that processes the events thanks to Blazor synchronization context
+
+        // Maybe the button is not yet disable, be sure to not reprocess the event in this case
+        if (isSubmitting)
+            return;
+
+        isSubmitting = true;
+        try
+        {
+            await Task.Delay(10000); // TODO do actual work here
+
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+
+    async Task ImportTweetsFromMongodb1()
+    {
+
+        DisableButtons = true;
+
+        string str = await MediaStat.Data.Services.MongodbImportTweetsClass.ImportTweetsfromMongodb();
+
+        await JsRuntime.InvokeAsync<Task>("alert", str);
+    }
 
     async Task HandleFileSelected(IFileListEntry[] files)
     {
@@ -277,6 +424,8 @@
         cmd.CommandType = System.Data.CommandType.Text;
         strProfilesFilePath = (string)cmd.ExecuteScalar();
         cnn.Close();
+
+        DisableButtons = false;
 
         // Subscription to table record change events
         //this.TweetsService.OnTweetsChanged += this.TweetsChanged;
@@ -661,41 +810,37 @@
         return strImportTweetsFlag;
     }
 
-    private async Task<string> ImportTweetsFromMongodb()
+    private async Task ImportTweetsFromMongodb()
     {
 
-        string _myConnectionString = MyAppData.MyConnectionString;
+        if (isSubmitting)
+            return;
 
-        string strQuery;
+        isSubmitting = true;
+        try
+        {
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+            if (confirmed)
+            {
+                string _myConnectionString = MyAppData.MyConnectionString;
 
+                strImportTweetsFromMongodbFlag = await SetTextboxFlag("Service Started");
+                DisableButtons = true;
 
-        //strQuery = "Declare @execution_id bigint" + Environment.NewLine;
-        //strQuery = strQuery + "EXEC[SSISDB].[catalog].[create_execution] @package_name = N'Package7.dtsx', @execution_id = @execution_id OUTPUT, @folder_name = N'Test', @project_name = N'Integration Services Import Data', @use32bitruntime = False, @reference_id = Null, @runinscaleout = False" + Environment.NewLine;
-        //strQuery = strQuery + "Select @execution_id" + Environment.NewLine;
-        //string strTweetFilePath_Param = @"C:\MyUploads\Tweets";
-        //strQuery = strQuery + "DECLARE @var0 sql_variant = N'" + strTweetFilePath_Param + "'" + Environment.NewLine;
-        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=30, @parameter_name=N'SourceFolderParam', @parameter_value=@var0" + Environment.NewLine;
-        //strQuery = strQuery + "DECLARE @var1 smallint = 1" + Environment.NewLine;
-        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type=50, @parameter_name=N'LOGGING_LEVEL', @parameter_value=@var1" + Environment.NewLine;
-        //strQuery = strQuery + "EXEC [SSISDB].[catalog].[start_execution] @execution_id" + Environment.NewLine;
-
-
-        //_myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
-        //SqlConnection cnn = new SqlConnection(_myConnectionString);
-        //SqlCommand cmd = new SqlCommand(strQuery, cnn);
-        //cmd.CommandType = System.Data.CommandType.Text;
-        //cnn.Open();
-        //cmd.ExecuteNonQuery();
-        //cnn.Close();
-
-        strImportTweetsFromMongodbFlag = await SetTextboxFlag("Service Started");
+                await MediaStat.Data.Services.MongodbImportTweetsClass.ImportTweetsfromMongodb();
 
 
-        string str = await MediaStat.Data.Services.MongodbImportTweetsClass.ImportTweetsfromMongodb();
+                await JsRuntime.InvokeAsync<Task>("alert", "Finished");
+            }
+        }
+        catch (Exception e)
+        {
 
-
-        await JsRuntime.InvokeAsync<Task>("alert", str);
-        return strImportTweetsFromMongodbFlag;
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
     }
 
     private async Task<string> SetTextboxFlag(string message)
@@ -839,22 +984,38 @@
         }
     }
 
-    private async Task<string> ImportProfilesFromMongodb()
+    private async Task ImportProfilesFromMongodb()
     {
 
-        string _myConnectionString = MyAppData.MyConnectionString;
+        if (isSubmitting)
+            return;
 
-        string strQuery;
+        isSubmitting = true;
+        try
+        {
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+            if (confirmed)
+            {
+                string _myConnectionString = MyAppData.MyConnectionString;
+
+                strImportTweetsFromMongodbFlag = await SetTextboxFlag("Service Started");
+                DisableButtons = true;
+
+                await MediaStat.Data.Services.MongodbImportProfilesClass.ImportProfilesfromMongodb();
 
 
-        strImportProfilesFromMongodbFlag = await SetTextboxFlag("Service Started");
+                await JsRuntime.InvokeAsync<Task>("alert", "Finished");
+            }
+        }
+        catch (Exception e)
+        {
 
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
 
-        string str = await MediaStat.Data.Services.MongodbImportProfilesClass.ImportProfilesfromMongodb();
-
-
-        await JsRuntime.InvokeAsync<Task>("alert", str);
-        return strImportProfilesFromMongodbFlag;
     }
 
     private async Task<string> Test()
@@ -866,6 +1027,84 @@
         }
 
         return "";
+    }
+
+
+    private async Task ResetDatabase()
+    {
+
+        string _myConnectionString = MyAppData.MyConnectionString;
+        string strQuery = string.Empty;
+
+        if (isSubmitting)
+            return;
+
+        isSubmitting = true;
+
+        try
+        {
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+            if (confirmed)
+            {
+                SqlConnection cnn = new SqlConnection(_myConnectionString);
+
+                strQuery = "delete FROM [MediaStat].[dbo].[TweetMain]";
+                SqlCommand cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cnn.Open();
+                cmd.ExecuteNonQuery();
+
+                strQuery = "delete FROM [MediaStat].[dbo].[TweetHashtagDim]";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                strQuery = "delete FROM [MediaStat].[dbo].[TweetLinkDim]";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                strQuery = "delete FROM [MediaStat].[dbo].[Accounts]";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                strQuery = "DBCC CHECKIDENT ('Accounts', NORESEED)";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                strQuery = "DBCC CHECKIDENT ('TweetMain', NORESEED)";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                strQuery = "DBCC CHECKIDENT ('TweetLinkDim', NORESEED)";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                strQuery = "DBCC CHECKIDENT ('TweetHashtagDim', NORESEED)";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                strQuery = " UPDATE [dbo].[GeneralConfig] SET [LastImportedMongoId] = null,[LastImportedProfilesMongoId] = null";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                cnn.Close();
+
+                await JsRuntime.InvokeAsync<Task>("alert", "Database reset successfully");
+            }
+
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+
     }
 
 
