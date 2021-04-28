@@ -53,7 +53,7 @@
 
                     <div class="form-group col-md-6 d-sm-none d-md-inline">
                         @*<RadzenLabel class="col-form-label" Component="cmbLocation" Text="Location" />
-                            <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />*@
+                    <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />*@
                         <RadzenLabel class="col-form-label" Component="tbLocationDescription" Text="Location" />
                         <RadzenTextBox class="form-control" Name="tbLocationDescription" @bind-Value="@objAccount.LocationDescription" />
                     </div>
@@ -85,9 +85,13 @@
                 <RadzenLabel class="col-form-label" Component="cmbAccountType" Text="Account Type" />
                 <RadzenDropDown class="form-control" Name="cmbAccountType" TValue="int?" @bind-Value="@objAccount.AccountType" Placeholder="Select..." Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
             </div>
-            <div class="form-group col-12 col-md-8">
+            <div class="form-group col-12 col-md-4">
                 <RadzenLabel class="col-form-label" Component="tbAccountUrl" Text="Account Url" />
                 <RadzenTextBox class="form-control" Name="tbAccountUrl" @bind-Value="@objAccount.AccountUrl" />
+            </div>
+            <div class="form-group col-12 col-md-4">
+                <RadzenLabel class="col-form-label" Component="tbAccountPhone" Text="Account Phone" />
+                <RadzenTextBox class="form-control" Name="tbAccountPhone" @bind-Value="@objAccount.AccountPhone" />
             </div>
 
 
@@ -218,7 +222,7 @@
 
             if (firstOrDefault != null & !string.IsNullOrEmpty(firstOrDefault.ScreenNameResponse))
             {
-                _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+                //_myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
                 //strQuery = "INSERT INTO [dbo].[Accounts] ([ScreenName],[ProfileName],[Joined],[LocationDescription],[Description],[AccountUrl],[Followers],[Following],[Link],[ProfileImageURL],[SpecialAccountId]) VALUES ('" + firstOrDefault.ScreenNameResponse + "','" + firstOrDefault.Name + "','" + firstOrDefault.CreatedAt + "','" + firstOrDefault.Location + "','" + firstOrDefault.Description + "','" + firstOrDefault.Url + "','" + firstOrDefault.FollowersCount + "','" + firstOrDefault.FriendsCount + "," + firstOrDefault.Url + "','" + firstOrDefault.ProfileBackgroundImageUrl + "','" + firstOrDefault.UserID + "')";
                 //strQuery = "Update [dbo].[Accounts] SET [ScreenName] = @ScreenName ,[ProfileName] = @ProfileName,[Joined] = @Joined,[LocationDescription] = @LocationDescription,[Description] = @Description,[AccountUrl] = @AccountUrl,[Followers] = @Followers,[Following] = @Following,[Link] = @Link,[ProfileImageURL] = @ProfileImageURL,[SpecialAccountId] = @SpecialAccountId WHERE [SpecialAccountId] = '" + id + "'";   //VALUES (@ScreenName,@ProfileName,@Joined,@LocationDescription,@Description,@AccountUrl,@Followers,@Following,@Link,@ProfileImageURL,@SpecialAccountId)

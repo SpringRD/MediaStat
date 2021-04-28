@@ -13,8 +13,8 @@ namespace MediaStat.Data
 
         }
 
-        public DbSet<EmployeeInfo> Employees { get; set; }
-        public DbSet<Gender> Genders { get; set; }
+        //public DbSet<EmployeeInfo> Employees { get; set; }
+        //public DbSet<Gender> Genders { get; set; }
         public DbSet<LookupCode> LookupCodes { get; set; }
         public DbSet<LookupDescription> LookupDescriptions { get; set; }
 
@@ -23,5 +23,7 @@ namespace MediaStat.Data
         public DbSet<AccountLink> AccountLinks { get; set; }
         
         public DbSet<LoginRequest> LoginRequests { get; set; }
+        
+        public DbSet<TweetHashtagDim> TweetHashtagDim { get; set; }
     }
 }

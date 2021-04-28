@@ -1,0 +1,142 @@
+﻿@page "/TweetHashtagDimPage"
+@using MediaStat.Data
+
+@inject TweetHashtagDimervice objTweetHashtagDimervice
+@inject LookupService objLookupService
+@inject NavigationManager navigationManager
+@inject IJSRuntime JsRuntime;
+
+@attribute [Authorize]
+
+<h1>Hashtags</h1>
+
+@if (objTweetHashtagDim == null)
+{
+    <p><em>No hashtags available</em></p>
+}
+else
+{
+    <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
+                Data="@hashtags" TItem="MediaStat.Data.TweetHashtagDim" RowSelect="@(args => objTweetHashtagDim = args)" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                RowUpdate="@OnUpdateRow" ColumnWidth="200px">
+        <Columns>
+            @*<RadzenGridColumn TItem="MediaStat.Data.TweetHashtagDim" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                <Template Context="hasht">
+                    <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="edit" Size="Radzen.ButtonSize.Medium" Click="@(args => EditHashtag(hasht))">
+                    </RadzenButton>
+                </Template>
+            </RadzenGridColumn>*@
+
+            <RadzenGridColumn TItem="MediaStat.Data.TweetHashtagDim" Property="Id" Title="Id" Visible="false">
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="MediaStat.Data.TweetHashtagDim" Property="HashtagText" Title="Hashtag Text">
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="MediaStat.Data.TweetHashtagDim" Property="Classification" Title="Classification">
+                <Template Context="hasht">
+                    <RadzenDropDown Disabled="true" @bind-Value="hasht.Classification" Data="@hashtagClassification" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </Template>
+                <EditTemplate Context="hasht">
+                    <RadzenDropDown @bind-Value="hasht.Classification" Data="@hashtagClassification" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="MediaStat.Data.TweetHashtagDim" Property="FreeClassification" Title="Free Classification">
+                <EditTemplate Context="hasht">
+                    <RadzenTextBox @bind-Value="hasht.FreeClassification" Style="width:100%; display: block" Name="FreeClassification" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="MediaStat.Data.TweetHashtagDim" Property="Description" Title="Description">
+                <EditTemplate Context="hasht">
+                    <RadzenTextBox @bind-Value="hasht.Description" Style="white-space: pre-wrap;width:100%; display: block" Name="Description" />
+                </EditTemplate>
+                <Template Context="data">
+                    <p style="white-space:pre-wrap">@String.Format("{0:d}", data.Description)</p>
+                </Template>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="MediaStat.Data.TweetHashtagDim" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="100px">
+                <Template Context="hasht">
+                    <RadzenButton Icon="edit" Size="Radzen.ButtonSize.Small" Click="@(args => EditRow(hasht))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="hasht">
+                    <RadzenButton Icon="save" Size="Radzen.ButtonSize.Small" Click="@((args) => SaveRow(hasht))">
+                    </RadzenButton>
+                    <RadzenButton Icon="cancel" Size="Radzen.ButtonSize.Small" ButtonStyle="Radzen.ButtonStyle.Secondary" Click="@((args) => CancelEdit(hasht))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+
+        </Columns>
+    </RadzenGrid>
+
+}
+
+
+@code {
+    RadzenGrid<MediaStat.Data.TweetHashtagDim> myGrid;
+
+    IEnumerable<MediaStat.Data.TweetHashtagDim> hashtags;
+    MediaStat.Data.TweetHashtagDim objTweetHashtagDim = new MediaStat.Data.TweetHashtagDim();
+
+    IEnumerable<LookupDescription> hashtagClassification;
+
+
+    int currentClassification1;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        hashtags = await Task.Run(() => objTweetHashtagDimervice.GetHashtags());
+        hashtagClassification = await Task.Run(() => objLookupService.GetLookupDescriptionsByCodeId(6));
+        objTweetHashtagDim = hashtags.FirstOrDefault();
+    }
+
+
+    async Task DeleteRow(MediaStat.Data.TweetHashtagDim hasht)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed == true)
+        {
+            objTweetHashtagDimervice.DeleteHashtagInfo(hasht);
+            hashtags = await Task.Run(() => objTweetHashtagDimervice.GetHashtags());
+        }
+
+    }
+
+
+    void EditRow(MediaStat.Data.TweetHashtagDim hasht)
+    {
+        myGrid.EditRow(hasht);
+    }
+
+    void OnUpdateRow(MediaStat.Data.TweetHashtagDim hasht)
+    {
+        objTweetHashtagDimervice.UpdateHashtag(hasht);
+    }
+
+    void SaveRow(MediaStat.Data.TweetHashtagDim hasht)
+    {
+        myGrid.UpdateRow(hasht);
+    }
+
+    void CancelEdit(MediaStat.Data.TweetHashtagDim hasht)
+    {
+        myGrid.CancelEditRow(hasht);
+
+        objTweetHashtagDimervice.CancelUpdateHashtag(hasht);
+    }
+
+    void OnRowDoubleClick(MediaStat.Data.TweetHashtagDim hasht)
+    {
+        navigationManager.NavigateTo("EditTweetHashtagDim/" + hasht.Id.ToString());
+    }
+
+
+    void EditHashtag(MediaStat.Data.TweetHashtagDim hasht)
+    {
+        navigationManager.NavigateTo("EditTweetHashtagDim/" + hasht.Id.ToString());
+    }
+
+}

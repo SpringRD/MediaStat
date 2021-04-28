@@ -22,7 +22,7 @@ else
 {
     <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
                 Data="@accounts" TItem="AccountInfo" RowSelect="@(args => objAccount = args)" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
-                RowUpdate="@OnUpdateRow" ColumnWidth="200px">
+                RowUpdate="@OnUpdateRow" ColumnWidth="200px" >
         @*RowDoubleClick="@(args => OnRowDoubleClick(args))"*@
         <Columns>
             <RadzenGridColumn TItem="AccountInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
@@ -133,6 +133,12 @@ else
                 <EditTemplate Context="acc">
                     <RadzenTextBox @bind-Value="acc.Description" Style="width:100%; display: block" Name="Description" />
                     <RadzenRequiredValidator Text="Description is required" Component="Description" Popup="true" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="AccountInfo" Property="AccountPhone" Title="Account Phone">
+                <EditTemplate Context="acc">
+                    <RadzenTextBox @bind-Value="acc.AccountPhone" Style="width:100%; display: block" Name="AccountPhone" />
+                    <RadzenRequiredValidator Text="Account Phone is required" Component="AccountPhone" Popup="true" />
                 </EditTemplate>
             </RadzenGridColumn>
             <RadzenGridColumn TItem="AccountInfo" Property="AccountUrl" Title="Account Url ">

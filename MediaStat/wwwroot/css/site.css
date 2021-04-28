@@ -8,6 +8,14 @@ a, .btn-link {
     color: #0366d6;
 }
 
+.ui-paginator {
+    display: block !important;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    padding: 0.625rem;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

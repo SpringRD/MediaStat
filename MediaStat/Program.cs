@@ -19,7 +19,8 @@ namespace MediaStat
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .WriteTo.File(@"/logs/log.txt",
-                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, 
+                    //fileSizeLimitBytes: 1048576,
                     rollingInterval: RollingInterval.Day,
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")  
                 .CreateLogger();

@@ -49,7 +49,7 @@
 
                     <div class="form-group col-md-6 d-sm-none d-md-inline">
                         @*<RadzenLabel class="col-form-label" Component="cmbLocation" Text="Location"/>
-                            <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>*@
+                    <RadzenDropDown class="form-control" Name="cmbLocation" TValue="int?" @bind-Value="@objAccount.Location" Placeholder="Select..." Data="@locations" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId"/>*@
                         <RadzenLabel class="col-form-label" Component="tbLocationDescription" Text="Location" />
                         <RadzenTextBox class="form-control" Name="tbLocationDescription" @bind-Value="@objAccount.LocationDescription" />
                     </div>
@@ -81,9 +81,13 @@
                 <RadzenLabel class="col-form-label" Component="cmbAccountType" Text="Account Type" />
                 <RadzenDropDown class="form-control" Name="cmbAccountType" TValue="int?" @bind-Value="@objAccount.AccountType" Placeholder="Select..." Data="@accountTypes" TextProperty="LookupDescriptionDetail" ValueProperty="LookupDescriptionId" />
             </div>
-            <div class="form-group col-12 col-md-8">
+            <div class="form-group col-12 col-md-4">
                 <RadzenLabel class="col-form-label" Component="tbAccountUrl" Text="Account Url" />
                 <RadzenTextBox class="form-control" Name="tbAccountUrl" @bind-Value="@objAccount.AccountUrl" />
+            </div>
+            <div class="form-group col-12 col-md-4">
+                <RadzenLabel class="col-form-label" Component="tbAccountPhone" Text="Account Phone" />
+                <RadzenTextBox class="form-control" Name="tbAccountPhone" @bind-Value="@objAccount.AccountPhone" />
             </div>
 
 

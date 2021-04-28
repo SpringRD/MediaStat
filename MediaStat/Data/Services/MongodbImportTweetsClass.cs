@@ -213,7 +213,9 @@ namespace MediaStat.Data.Services
                         if (strDt.Contains("+0000")) strDt = strDt.Remove(strDt.IndexOf("+"), 6);
                         DateTime dt = DateTime.ParseExact(strDt, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InvariantCulture);
                         string s = dt.ToString("yyyy-MM-dd", null);
+                        string strTweetTime = dt.ToString("yyyy-MM-dd HH:mm:ss", null);
                         DateTime dtTweetDate = DateTime.ParseExact(s, "yyyy-MM-dd", null);
+                        DateTime dtTweetTime = DateTime.ParseExact(strTweetTime, "yyyy-MM-dd HH:mm:ss", null);
 
                         var tweetDate = (from myRow in dtDates.AsEnumerable()
                                          where myRow.Field<DateTime>("DayDate") == dtTweetDate
@@ -630,7 +632,7 @@ namespace MediaStat.Data.Services
 
                 if (firstOrDefault != null & !string.IsNullOrEmpty(firstOrDefault.ScreenNameResponse))
                 {
-                    _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+                    //_myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
                     strQuery = "INSERT INTO [dbo].[Accounts] ([ScreenName],[ProfileName],[Joined],[LocationDescription],[Description],[AccountUrl],[Followers]," +
                         "[Following],[Link],[ProfileImageURL],[SpecialAccountId]) VALUES (@ScreenName,@ProfileName,@Joined,@LocationDescription," +
@@ -682,7 +684,7 @@ namespace MediaStat.Data.Services
 
             try
             {
-                _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+                //_myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
                 //strQuery = "INSERT INTO [dbo].[Accounts] ([ScreenName]) VALUES (@ScreenName)";
                 strQuery = "INSERT INTO Accounts(SpecialAccountId) output INSERTED.AccountId VALUES(@SpecialAccountId)";

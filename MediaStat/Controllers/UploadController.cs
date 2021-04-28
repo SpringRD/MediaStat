@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using MediaStat.Data;
 using Microsoft.JSInterop;
 
 namespace MediaStat.Controllers
@@ -63,7 +64,7 @@ namespace MediaStat.Controllers
                 //var imagePath = @"\Upload";
                 //var uploadPath = _environment.WebRootPath + imagePath;
 
-                string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+                string _myConnectionString = MyAppData.MyConnectionString;  //"Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
                 string strQuery = "SELECT [TweetsFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
                 SqlConnection cnn = new SqlConnection(_myConnectionString);
                 SqlCommand cmd = new SqlCommand(strQuery, cnn);
@@ -103,7 +104,7 @@ namespace MediaStat.Controllers
             if(file != null && file.Length > 0)
             {
    
-                string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+                string _myConnectionString = MyAppData.MyConnectionString;  //"Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
                 string strQuery = "SELECT [ProfilesFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
                 SqlConnection cnn = new SqlConnection(_myConnectionString);
                 SqlCommand cmd = new SqlCommand(strQuery, cnn);

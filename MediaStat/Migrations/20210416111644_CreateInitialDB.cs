@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MediaStat.Migrations
 {
-    public partial class CreateInitial : Migration
+    public partial class CreateInitialDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -30,24 +30,12 @@ namespace MediaStat.Migrations
                     Link = table.Column<string>(nullable: true),
                     AllLinks = table.Column<string>(nullable: true),
                     ProfileImageURL = table.Column<string>(nullable: true),
-                    SpecialAccountId = table.Column<string>(type: "nvarchar(4000)", nullable: true)
+                    SpecialAccountId = table.Column<string>(type: "nvarchar(4000)", nullable: true),
+                    LastChanged = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Accounts", x => x.AccountId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Genders",
-                columns: table => new
-                {
-                    GenderId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GenderDescription = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Genders", x => x.GenderId);
                 });
 
             migrationBuilder.CreateTable(
@@ -84,6 +72,19 @@ namespace MediaStat.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TweetHashtagDim",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    HashtagText = table.Column<string>(maxLength: 4000, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TweetHashtagDim", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AccountLinks",
                 columns: table => new
                 {
@@ -100,30 +101,6 @@ namespace MediaStat.Migrations
                         column: x => x.AccountInfoId,
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    EmployeeId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false),
-                    City = table.Column<string>(nullable: false),
-                    Country = table.Column<string>(nullable: false),
-                    GenderId = table.Column<int>(nullable: false),
-                    Classification1 = table.Column<int>(nullable: false),
-                    Classification2 = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.EmployeeId);
-                    table.ForeignKey(
-                        name: "FK_Employees_Genders_GenderId",
-                        column: x => x.GenderId,
-                        principalTable: "Genders",
-                        principalColumn: "GenderId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -153,11 +130,6 @@ namespace MediaStat.Migrations
                 column: "AccountInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_GenderId",
-                table: "Employees",
-                column: "GenderId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_LookupDescriptions_LookupCodeId",
                 table: "LookupDescriptions",
                 column: "LookupCodeId");
@@ -169,19 +141,16 @@ namespace MediaStat.Migrations
                 name: "AccountLinks");
 
             migrationBuilder.DropTable(
-                name: "Employees");
-
-            migrationBuilder.DropTable(
                 name: "LoginRequests");
 
             migrationBuilder.DropTable(
                 name: "LookupDescriptions");
 
             migrationBuilder.DropTable(
-                name: "Accounts");
+                name: "TweetHashtagDim");
 
             migrationBuilder.DropTable(
-                name: "Genders");
+                name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "LookupCodes");

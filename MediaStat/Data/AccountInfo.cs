@@ -85,6 +85,10 @@ namespace MediaStat.Data
         [DisplayName("SpecialAccountId")]
         public string SpecialAccountId { get; set; }
 
+        [Column(TypeName = "nvarchar(50)")]
+        [DisplayName("Account Phone")]
+        public string AccountPhone { get; set; }
+
         [DisplayName("LastChanged")]
         public DateTime? LastChanged { get; set; }
         //

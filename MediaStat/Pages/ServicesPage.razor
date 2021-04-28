@@ -276,6 +276,10 @@
 
     private string strTweetFilePath = "";
     private string strProfilesFilePath = "";
+    string _myConnectionString; //= "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+    string _myConnectionStringSSIS; //= "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+    string _myConnectionStringMaster; //= "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
 
     private MyClass _myClass;
 
@@ -326,7 +330,7 @@
         file = files.FirstOrDefault();
         if (file != null)
         {
-            string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
             string strQuery = "SELECT [TweetsFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
             SqlConnection cnn = new SqlConnection(_myConnectionString);
             SqlCommand cmd = new SqlCommand(strQuery, cnn);
@@ -361,7 +365,7 @@
         profilesFile = files.FirstOrDefault();
         if (profilesFile != null)
         {
-            string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
             string strQuery = "SELECT [ProfilesFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
             SqlConnection cnn = new SqlConnection(_myConnectionString);
             SqlCommand cmd = new SqlCommand(strQuery, cnn);
@@ -410,7 +414,9 @@
 
     protected override void OnInitialized()
     {
-        string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        _myConnectionString = MyAppData.MyConnectionString;
+        _myConnectionStringSSIS = MyAppData.MyConnectionStringSSIS;
+        _myConnectionStringMaster = MyAppData.MyConnectionStringMaster;
         string strQuery = "SELECT [TweetsFullPath] FROM [MediaStat].[dbo].[GeneralConfig]";
         SqlConnection cnn = new SqlConnection(_myConnectionString);
         SqlCommand cmd = new SqlCommand(strQuery, cnn);
@@ -435,7 +441,7 @@
 
     private void DeployProject_Click()
     {
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
 
 
         string targetServerName = "localhost";
@@ -443,9 +449,9 @@
         string projectName = "Integration Services Project1";
         string projectFilePath = @"C:\Projects\Integration Services Project1\Integration Services Project1\bin\Development\Integration Services Project1.ispac";
 
-        _myConnectionString = "Server=.;Database=SSISDB;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        //_myConnectionString = "Server=.;Database=SSISDB;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
-        SqlConnection sqlConnection = new SqlConnection(_myConnectionString);
+        SqlConnection sqlConnection = new SqlConnection(_myConnectionStringSSIS);
 
         // Create the Integration Services object
         //IntegrationServices integrationServices = new IntegrationServices(sqlConnection);
@@ -471,7 +477,7 @@
         //MyAppData.Configuration.
         //string sss = _myClass.ConnectionString;
 
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
 
         //System.Diagnostics.Process process = new System.Diagnostics.Process();
         //System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
@@ -498,10 +504,10 @@
         strQuery = strQuery + "DECLARE @var1 smallint = 1" + Environment.NewLine;
         strQuery = strQuery + "EXEC[SSISDB].[catalog].[set_execution_parameter_value] @execution_id,  @object_type = 50, @parameter_name = N'LOGGING_LEVEL', @parameter_value = @var1" + Environment.NewLine;
         strQuery = strQuery + "EXEC[SSISDB].[catalog].[start_execution] @execution_id";
-        _myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        //_myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
 
-        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlConnection cnn = new SqlConnection(_myConnectionStringMaster);
         SqlCommand cmd = new SqlCommand(strQuery, cnn);
         cmd.CommandType = System.Data.CommandType.Text;
         cnn.Open();
@@ -538,7 +544,7 @@
     private async Task TestIfImportFinished()
     {
 
-        string _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+
         string strQuery = "SELECT [ProfilesImportEnded] FROM [MediaStat].[dbo].[GeneralConfig]";
         SqlConnection cnn = new SqlConnection(_myConnectionString);
         SqlCommand cmd = new SqlCommand(strQuery, cnn);
@@ -579,12 +585,11 @@
 
     private async Task<string> UpdateProfiles()
     {
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
         ulong longID;
         string screenName;
 
         string strQuery;
-        _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
         strQuery = "SELECT [ScreenName],[SpecialAccountId] FROM [dbo].[Accounts]";
 
@@ -661,12 +666,12 @@
 
     private async Task<string> UpdateProfilesSpecialClassifications()
     {
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
         ulong longID;
         string screenName;
 
         string strQuery;
-        _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        //_myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
         strUpdateClassificationsFlag = "Updating ....";
 
@@ -775,7 +780,7 @@
     private async Task<string> ImportTweets()
     {
 
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
 
         string strQuery;
         //strQuery = "Declare @execution_id bigint" + Environment.NewLine;
@@ -798,8 +803,8 @@
         strQuery = strQuery + "EXEC [SSISDB].[catalog].[start_execution] @execution_id" + Environment.NewLine;
 
 
-        _myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
-        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        //_myConnectionString = "Server=.;Database=master;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        SqlConnection cnn = new SqlConnection(_myConnectionStringMaster);
         SqlCommand cmd = new SqlCommand(strQuery, cnn);
         cmd.CommandType = System.Data.CommandType.Text;
         cnn.Open();
@@ -822,7 +827,7 @@
             bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
             if (confirmed)
             {
-                string _myConnectionString = MyAppData.MyConnectionString;
+                //string _myConnectionString = MyAppData.MyConnectionString;
 
                 strImportTweetsFromMongodbFlag = await SetTextboxFlag("Service Started");
                 DisableButtons = true;
@@ -896,13 +901,12 @@
 
     private async Task SaveTweetFilePath_Click()
     {
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
         string strQuery;
 
         if (!string.IsNullOrWhiteSpace(strTweetFilePath))
         {
             strQuery = "Select Count(*) from [dbo].[GeneralConfig]";
-            _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
             SqlConnection cnn = new SqlConnection(_myConnectionString);
             SqlCommand cmd = new SqlCommand(strQuery, cnn);
             cmd.CommandType = System.Data.CommandType.Text;
@@ -941,13 +945,12 @@
 
     private async Task SaveProfilesFilePath_Click()
     {
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
         string strQuery;
 
         if (!string.IsNullOrWhiteSpace(strProfilesFilePath))
         {
             strQuery = "Select Count(*) from [dbo].[GeneralConfig]";
-            _myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
             SqlConnection cnn = new SqlConnection(_myConnectionString);
             SqlCommand cmd = new SqlCommand(strQuery, cnn);
             cmd.CommandType = System.Data.CommandType.Text;
@@ -996,7 +999,7 @@
             bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
             if (confirmed)
             {
-                string _myConnectionString = MyAppData.MyConnectionString;
+                //string _myConnectionString = MyAppData.MyConnectionString;
 
                 strImportTweetsFromMongodbFlag = await SetTextboxFlag("Service Started");
                 DisableButtons = true;
@@ -1033,7 +1036,7 @@
     private async Task ResetDatabase()
     {
 
-        string _myConnectionString = MyAppData.MyConnectionString;
+        //string _myConnectionString = MyAppData.MyConnectionString;
         string strQuery = string.Empty;
 
         if (isSubmitting)

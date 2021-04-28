@@ -17,27 +17,29 @@ namespace MediaStat.Data
 
         public List<EmployeeInfo> GetEmployee()
         {
-            var empList = _db.Employees.ToList();
-            return empList;
+            //var empList = _db.Employees.ToList();
+            //return empList;
+            return null;
         }
 
         public string Create(EmployeeInfo objEmployee)
         {
-            _db.Employees.Add(objEmployee);
-            _db.SaveChanges();
+            //_db.Employees.Add(objEmployee);
+            //_db.SaveChanges();
             return "Save successfully";
         }
 
         public EmployeeInfo GetEmployeeById(int id)
         {
-            EmployeeInfo employee = _db.Employees.FirstOrDefault(s => s.EmployeeId == id);
-            return employee;
+            //EmployeeInfo employee = _db.Employees.FirstOrDefault(s => s.EmployeeId == id);
+            //return employee;
+            return null;
         }
 
         public string UpdateEmployee(EmployeeInfo objEmployee)
         {
-            _db.Employees.Update(objEmployee);
-            _db.SaveChanges();
+            //_db.Employees.Update(objEmployee);
+            //_db.SaveChanges();
             return "Update successfully";
         }
 
@@ -50,8 +52,9 @@ namespace MediaStat.Data
 
         public List<Gender> GetGenders()
         {
-            var gnrList = _db.Genders.ToList();
-            return gnrList;
+            //var gnrList = _db.Genders.ToList();
+            //return gnrList;
+            return null;
         }
 
         public List<LookupCode> GetLookupCodes()

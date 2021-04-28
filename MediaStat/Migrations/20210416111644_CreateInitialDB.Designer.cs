@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MediaStat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200814171152_AddLastChangedColumn")]
-    partial class AddLastChangedColumn
+    [Migration("20210416111644_CreateInitialDB")]
+    partial class CreateInitialDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -110,57 +110,6 @@ namespace MediaStat.Migrations
                     b.ToTable("AccountLinks");
                 });
 
-            modelBuilder.Entity("MediaStat.Data.EmployeeInfo", b =>
-                {
-                    b.Property<int>("EmployeeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Classification1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Classification2")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("GenderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EmployeeId");
-
-                    b.HasIndex("GenderId");
-
-                    b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("MediaStat.Data.Gender", b =>
-                {
-                    b.Property<int>("GenderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("GenderDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("GenderId");
-
-                    b.ToTable("Genders");
-                });
-
             modelBuilder.Entity("MediaStat.Data.LoginRequest", b =>
                 {
                     b.Property<int>("LoginRequestId")
@@ -243,20 +192,27 @@ namespace MediaStat.Migrations
                     b.ToTable("LookupDescriptions");
                 });
 
+            modelBuilder.Entity("MediaStat.Data.TweetHashtagDim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("HashtagText")
+                        .HasColumnType("nvarchar(4000)")
+                        .HasMaxLength(4000);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TweetHashtagDim");
+                });
+
             modelBuilder.Entity("MediaStat.Data.AccountLink", b =>
                 {
                     b.HasOne("MediaStat.Data.AccountInfo", "AccountInfo")
                         .WithMany("AccountLinks")
                         .HasForeignKey("AccountInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MediaStat.Data.EmployeeInfo", b =>
-                {
-                    b.HasOne("MediaStat.Data.Gender", "Gender")
-                        .WithMany()
-                        .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

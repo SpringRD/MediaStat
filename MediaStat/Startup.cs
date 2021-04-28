@@ -41,6 +41,7 @@ namespace MediaStat
             services.AddScoped<AccountService>();
             services.AddScoped<LookupService>();
             services.AddScoped<LoginService>();
+            services.AddScoped<TweetHashtagDimervice>();
             services.AddBlazoredLocalStorage();
             services.AddOptions();
             services.AddAuthorizationCore();
@@ -69,6 +70,8 @@ namespace MediaStat
             //services.AddSingleton<IConfiguration>(Configuration);
             //services.AddTransient<MyClass>();
             MyAppData.MyConnectionString = Configuration.GetConnectionString("DevConnection");
+            MyAppData.MyConnectionStringSSIS = Configuration.GetConnectionString("DevConnectionSSIS");
+            MyAppData.MyConnectionStringMaster = Configuration.GetConnectionString("DevConnectionMaster");
 
         }
 

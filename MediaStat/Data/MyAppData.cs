@@ -11,6 +11,10 @@ namespace MediaStat.Data
         public static IConfiguration Configuration;
 
         public static string MyConnectionString;
+
+        public static string MyConnectionStringSSIS;
+
+        public static string MyConnectionStringMaster;
     }
 
 }

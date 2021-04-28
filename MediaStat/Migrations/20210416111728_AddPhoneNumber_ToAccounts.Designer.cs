@@ -4,14 +4,16 @@ using MediaStat.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MediaStat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210416111728_AddPhoneNumber_ToAccounts")]
+    partial class AddPhoneNumber_ToAccounts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,7 +161,9 @@ namespace MediaStat.Migrations
             modelBuilder.Entity("MediaStat.Data.LookupCode", b =>
                 {
                     b.Property<int>("LookupCodeId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("LookupCodeDescription")
                         .IsRequired()
@@ -197,17 +201,6 @@ namespace MediaStat.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("Classification")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(4000)")
-                        .HasMaxLength(4000);
-
-                    b.Property<string>("FreeClassification")
-                        .HasColumnType("nvarchar(4000)")
-                        .HasMaxLength(4000);
 
                     b.Property<string>("HashtagText")
                         .HasColumnType("nvarchar(4000)")
