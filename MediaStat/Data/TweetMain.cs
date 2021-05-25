@@ -20,6 +20,7 @@ namespace MediaStat.Data
         public int RetweetCount { get; set; }
         public int CommentsCount { get; set; }
         public int DateId { get; set; }
+        public int TimeId { get; set; }
         public int Hashtag1 { get; set; }
         public int Hashtag2 { get; set; }
         public int Hashtag3 { get; set; }

@@ -43,6 +43,20 @@
     </div>
     <div class="row">
         <div class="col-md-2">
+            <RadzenLabel class="col-form-label" Text="Tweet Time (From)" />
+        </div>
+        <div class="col-md-4">
+            <RadzenTextBox MaxLength="8" @oninput="MyCustomMethod" class="form-control" Name="dpDOB" @bind-Value="@strTweetTimeFrom" DateFormat="HH:mm:ss" />
+        </div>
+        <div class="col-md-2">
+            <RadzenLabel class="col-form-label" Text="Tweet Time (To)" />
+        </div>
+        <div class="col-md-4">
+            <RadzenTextBox MaxLength="8" class="form-control" Name="dpDOB" @bind-Value="@strTweetTimeTo" DateFormat="HH:mm:ss" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
             <RadzenLabel class="col-form-label" Text="Mention" />
         </div>
         <div class="col-md-4">
@@ -69,7 +83,7 @@
         <RadzenLabel class="col-form-label" Text="Search results count" />
     </div>
     <div class="col-md-4">
-        <RadzenTextBox class="form-control" @bind-Value="@strSearchCount" Name="tbSearchCount" ReadOnly="true"/>
+        <RadzenTextBox class="form-control" @bind-Value="@strSearchCount" Name="tbSearchCount" ReadOnly="true" />
     </div>
 </div>
 
@@ -79,59 +93,59 @@
         <div class="row">
             @if (tweets == null)
             {
-            <p><em>No tweets available</em></p>
+                <p><em>No tweets available</em></p>
             }
             else
             {
-            <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="50" AllowSorting="true"
-                        Data="@tweets" TItem="TweetInfo" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive">
-                <Columns>
-                    <RadzenGridColumn TItem="TweetInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
-                        <Template Context="twt">
-                            <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="link" Size="Radzen.ButtonSize.Medium" Click="@(args => OpenTweet(twt))">
-                            </RadzenButton>
-                        </Template>
-                    </RadzenGridColumn>
-                    <RadzenGridColumn TItem="TweetInfo" Property="AccountName" Title="Account Name">
-                        <Template Context="data">
-                            @String.Format("{0:d}", data.AccountName)
-                        </Template>
-                    </RadzenGridColumn>
-                    <RadzenGridColumn TItem="TweetInfo" Property="ScreenName" Title="Screen Name">
-                        <Template Context="data">
-                            @String.Format("{0:d}", data.ScreenName)
-                        </Template>
-                    </RadzenGridColumn>
-                    @*<RadzenGridColumn TItem="TweetInfo" @bind-Value="strHashtag" Property="Hashtag" Title="Hashtag"></RadzenGridColumn>
-                        <RadzenGridColumn TItem="TweetInfo" @bind-Value="strMention" Property="Mention" Title="Mention"></RadzenGridColumn>*@
-                    <RadzenGridColumn TItem="TweetInfo" Property="TweetDate" Title="Tweet Date">
-                        <Template Context="data">
-                            @String.Format("{0:d}", data.TweetDate)
-                        </Template>
-                    </RadzenGridColumn>
-                    <RadzenGridColumn TItem="TweetInfo" Property="FullText" Title="Full Text">
-                        <Template Context="data">
-                            <p style="white-space:pre-wrap">@String.Format("{0:d}", data.FullText)</p>
-                        </Template>
-                    </RadzenGridColumn>
-                    <RadzenGridColumn TItem="TweetInfo" Property="LikesCount" Title="Likes Count">
-                        <Template Context="data">
-                            @String.Format("{0:d}", data.LikesCount)
-                        </Template>
-                    </RadzenGridColumn>
-                    <RadzenGridColumn TItem="TweetInfo" Property="RetweetCount" Title="Retweets Count">
-                        <Template Context="data">
-                            @String.Format("{0:d}", data.RetweetCount)
-                        </Template>
-                    </RadzenGridColumn>
-                    <RadzenGridColumn TItem="TweetInfo" Property="CommentsCount" Title="Comments Count">
-                        <Template Context="data">
-                            @String.Format("{0:d}", data.CommentsCount)
-                        </Template>
-                    </RadzenGridColumn>
+                <RadzenGrid @ref="myGrid" AllowFiltering="true" AllowPaging="true" PageSize="50" AllowSorting="true"
+                            Data="@tweets" TItem="TweetInfo" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive">
+                    <Columns>
+                        <RadzenGridColumn TItem="TweetInfo" Context="order" Bubble="false" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="70px">
+                            <Template Context="twt">
+                                <RadzenButton ButtonStyle="Radzen.ButtonStyle.Primary" Icon="link" Size="Radzen.ButtonSize.Medium" Click="@(args => OpenTweet(twt))">
+                                </RadzenButton>
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="TweetInfo" Property="AccountName" Title="Account Name">
+                            <Template Context="data">
+                                @String.Format("{0:d}", data.AccountName)
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="TweetInfo" Property="ScreenName" Title="Screen Name">
+                            <Template Context="data">
+                                @String.Format("{0:d}", data.ScreenName)
+                            </Template>
+                        </RadzenGridColumn>
+                        @*<RadzenGridColumn TItem="TweetInfo" @bind-Value="strHashtag" Property="Hashtag" Title="Hashtag"></RadzenGridColumn>
+                            <RadzenGridColumn TItem="TweetInfo" @bind-Value="strMention" Property="Mention" Title="Mention"></RadzenGridColumn>*@
+                        <RadzenGridColumn TItem="TweetInfo" Property="TweetDate" Title="Tweet Date">
+                            <Template Context="data">
+                                @String.Format("{0:d}", data.TweetDate + " " + data.TweetTime)
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="TweetInfo" Property="FullText" Title="Full Text">
+                            <Template Context="data">
+                                <p style="white-space:pre-wrap">@String.Format("{0:d}", data.FullText)</p>
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="TweetInfo" Property="LikesCount" Title="Likes Count">
+                            <Template Context="data">
+                                @String.Format("{0:d}", data.LikesCount)
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="TweetInfo" Property="RetweetCount" Title="Retweets Count">
+                            <Template Context="data">
+                                @String.Format("{0:d}", data.RetweetCount)
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="TweetInfo" Property="CommentsCount" Title="Comments Count">
+                            <Template Context="data">
+                                @String.Format("{0:d}", data.CommentsCount)
+                            </Template>
+                        </RadzenGridColumn>
 
-                </Columns>
-            </RadzenGrid>
+                    </Columns>
+                </RadzenGrid>
             }
         </div>
     </div>
@@ -145,6 +159,8 @@
     string strAccountName;
     DateTime strTweetDateFrom;
     DateTime strTweetDateTo;
+    string strTweetTimeFrom;
+    string strTweetTimeTo;
     string strMention;
     string strFullText;
     string strSearchCount;
@@ -154,6 +170,7 @@
     RadzenGrid<TweetInfo> myGrid;
     IEnumerable<TweetInfo> tweets;
     System.Data.DataTable dtTweets = new System.Data.DataTable();
+    System.Data.DataTable dtTweetTime = new System.Data.DataTable();
 
     public class TweetInfo
     {
@@ -165,14 +182,32 @@
         public int RetweetCount;
         public int CommentsCount;
         public string TweetDate;
+        public string TweetTime;
         public string ScreenName;
         public string TweetSpecialId;
 
     }
 
+    void MyCustomMethod(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        var value = args.Value;
+    }
+
     protected void SearchForTweets()
     {
-        string strQuery = "SELECT [TweetMain].[AccountId],[FullText],[SpecialText],[TweetSpecialId],[LikesCount],[RetweetCount],[CommentsCount],A1.ProfileName,A1.ScreenName,CONVERT(VARCHAR,[TweetDateDim].DayDate,103) AS DayDate FROM [MediaStat].[dbo].[TweetMain] inner join [dbo].[TweetDateDim] on [TweetMain].DateId = [TweetDateDim].Id inner join [dbo].[Accounts] A1 on  [TweetMain].[AccountId] = A1.AccountId where ";
+        SqlConnection cnn1 = new SqlConnection(_myConnectionString);
+        SqlCommand cmd1 = new SqlCommand("SELECT  [TimeKey],[Time30] FROM [MediaStat].[dbo].[TweetTimeDim]", cnn1);
+        cnn1.Open();
+        SqlDataReader dr1 = cmd1.ExecuteReader();
+        dtTweetTime.Load(dr1);
+        cnn1.Close();
+
+        dtTweets.Clear();
+        tweets = ConvertToIEnumerable(dtTweets);
+        strSearchCount = tweets.Count().ToString();
+
+
+        string strQuery = "SELECT [TweetMain].[AccountId],[FullText],[SpecialText],[TweetSpecialId],[LikesCount],[RetweetCount],[CommentsCount],A1.ProfileName,A1.ScreenName,CONVERT(VARCHAR,[TweetDateDim].DayDate,103) AS DayDate, Time30  FROM [MediaStat].[dbo].[TweetMain] inner join [dbo].[TweetDateDim] on [TweetMain].DateId = [TweetDateDim].Id Left join [dbo].[TweetTimeDim] on [TweetMain].[TimeId] = TweetTimeDim.TimeKey inner join [dbo].[Accounts] A1 on  [TweetMain].[AccountId] = A1.AccountId where ";
         int intAndCounter = 0;
 
         strSearchCount = "0";
@@ -180,7 +215,20 @@
         //where contains (TweetMain.*,'"@diana*"')
         if (!string.IsNullOrWhiteSpace(strFullText))
         {
-            strQuery += "contains (TweetMain.*,'" + strFullText + "') ";
+            string[] strSplitedFullText = strFullText.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string strFormattedSearchText = string.Empty;
+            for (int i = 0; i < strSplitedFullText.Length; i++)
+            {
+                if (i == strSplitedFullText.Length - 1)
+                {
+                    strFormattedSearchText += "\"" + strSplitedFullText[i] + "\"";
+                }
+                else
+                {
+                    strFormattedSearchText += "\"" + strSplitedFullText[i] + "\"" + " AND ";
+                }
+            }
+            strQuery += "contains (TweetMain.*,'" + strFormattedSearchText + "') ";
             intAndCounter += 1;
         }
 
@@ -255,6 +303,45 @@
             }
         }
 
+
+        if (!string.IsNullOrEmpty(strTweetTimeFrom))
+        {
+            var time = dtTweetTime.AsEnumerable().FirstOrDefault(x => x.Field<string>("Time30") == strTweetTimeFrom.ToString());
+            if (time != null)
+            {
+                if (intAndCounter > 0)
+                {
+                    strQuery += "and TimeKey >= " + time.Field<int>("TimeKey");
+                }
+                else
+                {
+                    strQuery += "TimeKey >= " + time.Field<int>("TimeKey");
+                    intAndCounter += 1;
+                }
+
+            }
+        }
+
+        if (!string.IsNullOrEmpty(strTweetTimeTo))
+        {
+            var time = dtTweetTime.AsEnumerable().FirstOrDefault(x => x.Field<string>("Time30") == strTweetTimeTo.ToString());
+            if (time != null)
+            {
+                if (intAndCounter > 0)
+                {
+                    strQuery += "and TimeKey <= " + time.Field<int>("TimeKey");
+                }
+                else
+                {
+                    strQuery += "TimeKey <= " + time.Field<int>("TimeKey");
+                    intAndCounter += 1;
+                }
+
+            }
+        }
+
+
+
         //_myConnectionString = "Server=.;Database=MediaStat;Trusted_Connection=True;MultipleActiveResultSets=true;";
 
         if (intAndCounter > 0)
@@ -289,6 +376,7 @@
                 AccountName = row["ProfileName"].ToString(),
                 FullText = row["FullText"].ToString(),
                 TweetDate = row["DayDate"].ToString(),
+                TweetTime = row["Time30"].ToString(),
                 LikesCount = Convert.ToInt32(row["LikesCount"]),
                 RetweetCount = Convert.ToInt32(row["RetweetCount"]),
                 CommentsCount = Convert.ToInt32(row["CommentsCount"]),

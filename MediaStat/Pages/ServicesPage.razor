@@ -817,6 +817,26 @@
 
     private async Task ImportTweetsFromMongodb()
     {
+        string strQuery = "SELECT [TweetssImportEnded] FROM [MediaStat].[dbo].[GeneralConfig]";
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        bool importTweetsInProgress = (bool)cmd.ExecuteScalar();
+        cnn.Close();
+
+        if (importTweetsInProgress == true)
+        {
+            await JsRuntime.InvokeAsync<Task>("alert", "Import in progress");
+            return;
+        }
+
+        strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [TweetssImportEnded] = 1";
+        cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        cmd.ExecuteNonQuery();
+        cnn.Close();
 
         if (isSubmitting)
             return;
@@ -835,12 +855,26 @@
                 await MediaStat.Data.Services.MongodbImportTweetsClass.ImportTweetsfromMongodb();
 
 
+                isSubmitting = false;
+
+                strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [TweetssImportEnded] = 0";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cnn.Open();
+                cmd.ExecuteNonQuery();
+                cnn.Close();
+
                 await JsRuntime.InvokeAsync<Task>("alert", "Finished");
             }
         }
         catch (Exception e)
         {
-
+            strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [TweetssImportEnded] = 0";
+            cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            cmd.ExecuteNonQuery();
+            cnn.Close();
         }
         finally
         {
@@ -990,6 +1024,28 @@
     private async Task ImportProfilesFromMongodb()
     {
 
+        string strQuery = "SELECT [TweetssImportEnded] FROM [MediaStat].[dbo].[GeneralConfig]";
+        SqlConnection cnn = new SqlConnection(_myConnectionString);
+        SqlCommand cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        bool importTweetsInProgress = (bool)cmd.ExecuteScalar();
+        cnn.Close();
+
+        if (importTweetsInProgress == true)
+        {
+            await JsRuntime.InvokeAsync<Task>("alert", "Import in progress");
+            return;
+        }
+
+
+        strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [TweetssImportEnded] = 1";
+        cmd = new SqlCommand(strQuery, cnn);
+        cmd.CommandType = System.Data.CommandType.Text;
+        cnn.Open();
+        cmd.ExecuteNonQuery();
+        cnn.Close();
+
         if (isSubmitting)
             return;
 
@@ -1007,12 +1063,24 @@
                 await MediaStat.Data.Services.MongodbImportProfilesClass.ImportProfilesfromMongodb();
 
 
+                strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [TweetssImportEnded] = 0";
+                cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cnn.Open();
+                cmd.ExecuteNonQuery();
+                cnn.Close();
+
                 await JsRuntime.InvokeAsync<Task>("alert", "Finished");
             }
         }
         catch (Exception e)
         {
-
+            strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [TweetssImportEnded] = 0";
+            cmd = new SqlCommand(strQuery, cnn);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cnn.Open();
+            cmd.ExecuteNonQuery();
+            cnn.Close();
         }
         finally
         {

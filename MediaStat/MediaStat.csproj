@@ -21,6 +21,8 @@
 		<Compile Remove="Migrations\20210417132729_Remove_AutoIncrementFromLookupcode.Designer.cs" />
 		<Compile Remove="Migrations\20210417134029_Remove_AutoIncrementFromLookupcode.cs" />
 		<Compile Remove="Migrations\20210417134029_Remove_AutoIncrementFromLookupcode.Designer.cs" />
+		<Compile Remove="Migrations\20210428112531_AddTimeFieldToainTweetTable.cs" />
+		<Compile Remove="Migrations\20210428112531_AddTimeFieldToainTweetTable.Designer.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

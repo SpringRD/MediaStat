@@ -32,6 +32,7 @@ namespace MediaStat.Data.Services
 
             try
             {
+
                 Log.Information($"START IMPORTING TWEETES FROM MONGO AT: " + DateTime.Now.ToString());
 
                 //Declare Variables
@@ -40,6 +41,7 @@ namespace MediaStat.Data.Services
                 string query;
 
                 DataTable dtDates = new DataTable();
+                DataTable dtTimes = new DataTable();
                 SqlCommand myCommand1;
 
 
@@ -58,6 +60,13 @@ namespace MediaStat.Data.Services
                 SqlDataReader drDates = myCommand1.ExecuteReader(CommandBehavior.CloseConnection);
                 dtDates = new DataTable();
                 dtDates.Load(drDates);
+
+                query = "SELECT [TimeKey],[Hour30],[MinuteNumber],[SecondNumber] FROM [MediaStat].[dbo].[TweetTimeDim]";
+                myADONETConnection.Open();
+                myCommand1 = new SqlCommand(query, myADONETConnection);
+                SqlDataReader drTimes = myCommand1.ExecuteReader(CommandBehavior.CloseConnection);
+                dtTimes = new DataTable();
+                dtTimes.Load(drTimes);
 
 
 
@@ -141,6 +150,7 @@ namespace MediaStat.Data.Services
                     int? linkId1 = null;
                     int? linkId2 = null;
                     int? dateId = null;
+                    int? timeId = null;
 
                     if (!string.IsNullOrWhiteSpace(mention1))
                     {
@@ -207,22 +217,53 @@ namespace MediaStat.Data.Services
                     if (doc[5] != null)
                     {
 
-
                         //DateTime dt = DateTime.ParseExact(doc[5].ToString(), "yyyy-MM-dd HH:mm:ss", null);
                         string strDt = doc[5].ToString();
-                        if (strDt.Contains("+0000")) strDt = strDt.Remove(strDt.IndexOf("+"), 6);
-                        DateTime dt = DateTime.ParseExact(strDt, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InvariantCulture);
-                        string s = dt.ToString("yyyy-MM-dd", null);
-                        string strTweetTime = dt.ToString("yyyy-MM-dd HH:mm:ss", null);
-                        DateTime dtTweetDate = DateTime.ParseExact(s, "yyyy-MM-dd", null);
-                        DateTime dtTweetTime = DateTime.ParseExact(strTweetTime, "yyyy-MM-dd HH:mm:ss", null);
+
+
+                        //OLDDDDDDDDDDDDDDDDDDDDDDD
+                        //if (strDt.Contains("+0000")) strDt = strDt.Remove(strDt.IndexOf("+"), 6);
+                        //DateTime dt = DateTime.ParseExact(strDt, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InvariantCulture);
+                        //string s = dt.ToString("yyyy-MM-dd", null);
+                        ////string strTweetTime = dt.ToString("yyyy-MM-dd HH:mm:ss", null);
+                        //DateTime dtTweetDate = DateTime.ParseExact(s, "yyyy-MM-dd", null);
+                        ////DateTime dtTweetTime = DateTime.ParseExact(strTweetTime, "yyyy-MM-dd HH:mm:ss", null);
+
+                        DateTime? dtTweetDate = null;
+                        DateTime? dt = null;
+                        if (strDt.Contains("T") && strDt.Contains("Z"))
+                        {
+                            strDt = strDt.Replace("T", " ");
+                            strDt = strDt.Replace("Z", "");
+                            dt = DateTime.ParseExact(strDt, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                            string s = dt.Value.ToString("yyyy-MM-dd", null);
+                            dtTweetDate = DateTime.ParseExact(s, "yyyy-MM-dd", null);
+                        }
+                        else
+                        {
+                            if (strDt.Contains("+0000")) strDt = strDt.Remove(strDt.IndexOf("+"), 6);
+                            dt = DateTime.ParseExact(strDt, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InvariantCulture);
+                            string s = dt.Value.ToString("yyyy-MM-dd", null);
+                            dtTweetDate = DateTime.ParseExact(s, "yyyy-MM-dd", null);
+                        }
 
                         var tweetDate = (from myRow in dtDates.AsEnumerable()
                                          where myRow.Field<DateTime>("DayDate") == dtTweetDate
                                          select myRow).ToList();
+                        //var tweetTime = (from myRow in dtTimes.AsEnumerable()
+                        //                 where myRow.Field<DateTime>("DayDate") == dtTweetDate
+                        //                 select myRow).ToList();
+
+                        var tweetTime = dtTimes.AsEnumerable().FirstOrDefault(x => x.Field<byte>("Hour30") == dt.Value.Hour &&
+                                        x.Field<byte>("MinuteNumber") == dt.Value.Minute && x.Field<byte>("SecondNumber") == dt.Value.Second);
+
                         if (tweetDate.Count != 0)
                         {
                             dateId = tweetDate[0].Field<int>("Id");
+                        }
+                        if (tweetDate != null)
+                        {
+                            timeId = tweetTime.Field<int>("TimeKey");
                         }
                     }
 
@@ -281,7 +322,7 @@ namespace MediaStat.Data.Services
 
 
                     //
-                    string insertTweetQuery = "INSERT INTO [dbo].[TweetMain] ([AccountId],[FullText],[SpecialText],[TweetSpecialId],[LikesCount],[RetweetCount],[CommentsCount],[DateId],[Hashtag1],[Hashtag2],[Hashtag3],[Mention1],[Mention2],[Link1],[Link2]) VALUES (@AccountId,@FullText,@SpecialText,@TweetSpecialId,@LikesCount,@RetweetCount,@CommentsCount,@DateId,@Hashtag1,@Hashtag2,@Hashtag3,@Mention1,@Mention2,@Link1,@Link2)";
+                    string insertTweetQuery = "INSERT INTO [dbo].[TweetMain] ([AccountId],[FullText],[SpecialText],[TweetSpecialId],[LikesCount],[RetweetCount],[CommentsCount],[DateId],[TimeId],[Hashtag1],[Hashtag2],[Hashtag3],[Mention1],[Mention2],[Link1],[Link2]) VALUES (@AccountId,@FullText,@SpecialText,@TweetSpecialId,@LikesCount,@RetweetCount,@CommentsCount,@DateId,@TimeId,@Hashtag1,@Hashtag2,@Hashtag3,@Mention1,@Mention2,@Link1,@Link2)";
 
                     using (SqlCommand cmd = new SqlCommand(insertTweetQuery, myADONETConnection))
                     {
@@ -293,6 +334,7 @@ namespace MediaStat.Data.Services
                         cmd.Parameters.AddWithValue("@RetweetCount", (RetweetCount != null) ? RetweetCount : (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@CommentsCount", (CommentsCount != null) ? CommentsCount : (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@DateId", (dateId != null) ? dateId : (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@TimeId", (timeId != null) ? timeId : (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@Hashtag1", (hashtagId1 != null) ? hashtagId1 : (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@Hashtag2", (hashtagId2 != null) ? hashtagId2 : (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@Hashtag3", (hashtagId3 != null) ? hashtagId3 : (object)DBNull.Value);
@@ -324,6 +366,15 @@ namespace MediaStat.Data.Services
                 UpdateLastMongoImportedId(myADONETConnection);
                 Log.Information($"The last id imported is ( " + _lastId + ") : " + DateTime.Now.ToString());
                 Log.Information($"END IMPORTING TWEETES FROM MONGO AT: " + DateTime.Now.ToString());
+
+                string strQuery = "Update [MediaStat].[dbo].[GeneralConfig] SET [TweetssImportEnded] = 0";
+                SqlConnection cnn = new SqlConnection(MyAppData.MyConnectionString);
+                SqlCommand cmd = new SqlCommand(strQuery, cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cnn.Open();
+                cmd.ExecuteNonQuery();
+                cnn.Close();
+
                 if (myADONETConnection.State == ConnectionState.Open) myADONETConnection.Close();
             }
             return "Finished";
