@@ -13,6 +13,7 @@ using Microsoft.JSInterop;
 using System.Globalization;
 using LinqToTwitter;
 using Serilog;
+using System.Text;
 
 namespace MediaStat.Data.Services
 {
@@ -73,7 +74,8 @@ namespace MediaStat.Data.Services
                 //var documents = GetTweetsfromCollection();
 
                 List<BsonDocument> documents;
-                _lastId = GetLastMongoImportedId(myADONETConnection);
+                _lastId = GetToStartObjectIdFromMongo();
+                //_lastId = GetLastMongoImportedId(myADONETConnection);
                 if (string.IsNullOrEmpty(_lastId))
                 {
                     documents = GetTweetsfromCollection(true);
@@ -99,11 +101,11 @@ namespace MediaStat.Data.Services
                     {
                         var urlArray = (BsonArray)doc[11];
 
-                        if (urlArray != null && urlArray.Count == 1)
+                        if (urlArray != null && urlArray.Count > 0)
                         {
                             link1 = urlArray[0]["url"].ToString();
                         }
-                        else if (urlArray != null && urlArray.Count == 2)
+                        if (urlArray != null && urlArray.Count > 1)
                         {
                             link2 = urlArray[1]["url"].ToString();
 
@@ -118,11 +120,11 @@ namespace MediaStat.Data.Services
                         {
                             hashtag1 = hashtagArray[0]["text"].ToString();
                         }
-                        else if (hashtagArray != null && hashtagArray.Count > 1)
+                        if (hashtagArray != null && hashtagArray.Count > 1)
                         {
                             hashtag2 = hashtagArray[1]["text"].ToString();
                         }
-                        else if (hashtagArray != null && hashtagArray.Count > 2)
+                        if (hashtagArray != null && hashtagArray.Count > 2)
                         {
                             hashtag3 = hashtagArray[2]["text"].ToString();
                         }
@@ -135,7 +137,7 @@ namespace MediaStat.Data.Services
                         {
                             mention1 = mentionArray[0]["screen_name"].ToString();
                         }
-                        else if (mentionArray != null && mentionArray.Count > 1)
+                        if (mentionArray != null && mentionArray.Count > 1)
                         {
                             mention2 = mentionArray[1]["screen_name"].ToString();
                         }
@@ -383,37 +385,53 @@ namespace MediaStat.Data.Services
 
         private static int InsertAccountByScreenName(SqlConnection con, string sreenName)
         {
-
-            using (SqlCommand cmd = new SqlCommand("INSERT INTO Accounts(ScreenName) output INSERTED.AccountId VALUES(@ScreenName)", con))
+            int modified = 0;
+            try
             {
-                cmd.Parameters.AddWithValue("@ScreenName", sreenName);
-                if (con.State == System.Data.ConnectionState.Closed)
-                    con.Open();
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO Accounts(ScreenName) output INSERTED.AccountId VALUES(@ScreenName)", con))
+                {
+                    cmd.Parameters.AddWithValue("@ScreenName", sreenName);
+                    if (con.State == System.Data.ConnectionState.Closed)
+                        con.Open();
 
-                int modified = (int)cmd.ExecuteScalar();
+                    modified = (int)cmd.ExecuteScalar();
 
-                if (con.State == System.Data.ConnectionState.Open)
-                    con.Close();
-
-                return modified;
+                    if (con.State == System.Data.ConnectionState.Open)
+                        con.Close();
+                }
             }
+
+            catch (Exception exception)
+            {
+                Log.Information(exception.StackTrace);
+            }
+            return modified;
         }
 
         private static int GetAccountByScreenName(SqlConnection con, string sreenName)
         {
-
-            using (SqlCommand cmd = new SqlCommand("Select AccountId from Accounts where ScreenName  = '" + sreenName + "'", con))
+            int modified = 0;
+            try
             {
-                if (con.State == System.Data.ConnectionState.Closed)
-                    con.Open();
+                using (SqlCommand cmd = new SqlCommand("Select AccountId from Accounts where ScreenName  = '" + sreenName + "'", con))
+                {
+                    if (con.State == System.Data.ConnectionState.Closed)
+                        con.Open();
 
-                int modified = (int)cmd.ExecuteScalar();
+                    modified = (int)cmd.ExecuteScalar();
 
-                if (con.State == System.Data.ConnectionState.Open)
-                    con.Close();
+                    if (con.State == System.Data.ConnectionState.Open)
+                        con.Close();
 
-                return modified;
+                }
+
+
             }
+            catch (Exception exception)
+            {
+                Log.Information(exception.StackTrace);
+            }
+            return modified;
         }
 
         private static int InsertAccountBySpecialId(SqlConnection con, string specialAccountId)
@@ -754,6 +772,49 @@ namespace MediaStat.Data.Services
                 return modified;
             }
             return modified;
+        }
+
+        public static string GetToStartObjectIdFromMongo()
+        {
+            string strReturn = string.Empty;
+            string _myConnectionString = MyAppData.MyConnectionString;
+            StringBuilder strQuery = new StringBuilder();
+
+            List<BsonDocument> documents;
+
+            try
+            {
+                strQuery.Append("declare @maxTweetId int ");
+                strQuery.Append("select @maxTweetId = MAX(TweetId) FROM [MediaStat].[dbo].[TweetMain] ");
+                strQuery.Append("select [TweetSpecialId] FROM [MediaStat].[dbo].[TweetMain] where TweetId = @maxTweetId");
+
+                SqlConnection cnn = new SqlConnection(_myConnectionString);
+                SqlCommand cmd = new SqlCommand(strQuery.ToString(), cnn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cnn.Open();
+                string strObjectId = (string)cmd.ExecuteScalar();
+                cnn.Close();
+
+                if (!string.IsNullOrEmpty(strObjectId))
+                {
+                    var filter = Builders<BsonDocument>.Filter.Eq("id", strObjectId);
+                    var dbClient = new MongoClient("mongodb://localhost:27017");
+                    IMongoDatabase db = dbClient.GetDatabase("crawling");
+                    var tweets = db.GetCollection<BsonDocument>("tweets");
+                    documents = tweets.Find(filter).ToList();
+                    if (documents.Count > 0)
+                    {
+                        strReturn = documents[0][0].ToString();
+                    }
+                }
+
+            }
+
+            catch (Exception exception)
+            {
+                Log.Information(exception.StackTrace);
+            }
+            return strReturn;
         }
 
 

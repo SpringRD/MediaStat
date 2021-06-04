@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="36"
-  DTS:VersionGUID="{7FB2107F-143D-4DAA-AB76-AAE627378C8A}">
+  DTS:VersionBuild="41"
+  DTS:VersionGUID="{71BB9563-1C50-4958-A7A0-3683362280DA}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -163,7 +163,7 @@
                       name="_id" />
                     <outputColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[date]"
-                      dataType="nText"
+                      dataType="dbTimeStamp"
                       externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[date]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[date]"
                       name="date" />
@@ -181,7 +181,7 @@
                       name="geo" />
                     <outputColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[id]"
-                      dataType="i8"
+                      dataType="nText"
                       externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[id]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[id]"
                       name="id" />
@@ -197,6 +197,54 @@
                       externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[place]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place]"
                       name="place" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[reply_count]"
+                      dataType="i8"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[reply_count]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[reply_count]"
+                      name="reply_count" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[retweet_count]"
+                      dataType="i8"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[retweet_count]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[retweet_count]"
+                      name="retweet_count" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[text]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[text]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[text]"
+                      name="text" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[userid]"
+                      dataType="i8"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[userid]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[userid]"
+                      name="userid" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[source]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[source]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[source]"
+                      name="source" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[crawling_date]"
+                      dataType="dbTimeStamp"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[crawling_date]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[crawling_date]"
+                      name="crawling_date" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[hashtags]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[hashtags]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[hashtags]"
+                      name="hashtags" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[mentions]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[mentions]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[mentions]"
+                      name="mentions" />
                     <outputColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.bounding_box.type]"
                       dataType="nText"
@@ -246,29 +294,17 @@
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.url]"
                       name="place.url" />
                     <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[reply_count]"
-                      dataType="i8"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[reply_count]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[reply_count]"
-                      name="reply_count" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[retweet_count]"
-                      dataType="i8"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[retweet_count]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[retweet_count]"
-                      name="retweet_count" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[text]"
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[task_id]"
                       dataType="nText"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[text]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[text]"
-                      name="text" />
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[task_id]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[task_id]"
+                      name="task_id" />
                     <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[userid]"
-                      dataType="i8"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[userid]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[userid]"
-                      name="userid" />
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[task_sn]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[task_sn]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[task_sn]"
+                      name="task_sn" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -278,7 +314,7 @@
                       name="_id" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[date]"
-                      dataType="nText"
+                      dataType="dbTimeStamp"
                       name="date" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[favorite_count]"
@@ -290,7 +326,7 @@
                       name="geo" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[id]"
-                      dataType="i8"
+                      dataType="nText"
                       name="id" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[permalink]"
@@ -300,6 +336,38 @@
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[place]"
                       dataType="nText"
                       name="place" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[reply_count]"
+                      dataType="i8"
+                      name="reply_count" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[retweet_count]"
+                      dataType="i8"
+                      name="retweet_count" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[text]"
+                      dataType="nText"
+                      name="text" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[userid]"
+                      dataType="i8"
+                      name="userid" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[source]"
+                      dataType="nText"
+                      name="source" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[crawling_date]"
+                      dataType="dbTimeStamp"
+                      name="crawling_date" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[hashtags]"
+                      dataType="nText"
+                      name="hashtags" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[mentions]"
+                      dataType="nText"
+                      name="mentions" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[place.bounding_box.type]"
                       dataType="nText"
@@ -333,21 +401,13 @@
                       dataType="nText"
                       name="place.url" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[reply_count]"
-                      dataType="i8"
-                      name="reply_count" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[retweet_count]"
-                      dataType="i8"
-                      name="retweet_count" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[text]"
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[task_id]"
                       dataType="nText"
-                      name="text" />
+                      name="task_id" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[userid]"
-                      dataType="i8"
-                      name="userid" />
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[task_sn]"
+                      dataType="nText"
+                      name="task_sn" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -363,7 +423,7 @@
                       name="_id" />
                     <outputColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[date]"
-                      dataType="nText"
+                      dataType="dbTimeStamp"
                       externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[date]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[date]"
                       name="date" />
@@ -381,7 +441,7 @@
                       name="geo" />
                     <outputColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[id]"
-                      dataType="i8"
+                      dataType="nText"
                       externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[id]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[id]"
                       name="id" />
@@ -397,6 +457,54 @@
                       externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[place]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[place]"
                       name="place" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[reply_count]"
+                      dataType="i8"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[reply_count]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[reply_count]"
+                      name="reply_count" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[retweet_count]"
+                      dataType="i8"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[retweet_count]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[retweet_count]"
+                      name="retweet_count" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[text]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[text]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[text]"
+                      name="text" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[userid]"
+                      dataType="i8"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[userid]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[userid]"
+                      name="userid" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[source]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[source]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[source]"
+                      name="source" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[crawling_date]"
+                      dataType="dbTimeStamp"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[crawling_date]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[crawling_date]"
+                      name="crawling_date" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[hashtags]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[hashtags]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[hashtags]"
+                      name="hashtags" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[mentions]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[mentions]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[mentions]"
+                      name="mentions" />
                     <outputColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[place.bounding_box.type]"
                       dataType="nText"
@@ -446,29 +554,17 @@
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[place.url]"
                       name="place.url" />
                     <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[reply_count]"
-                      dataType="i8"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[reply_count]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[reply_count]"
-                      name="reply_count" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[retweet_count]"
-                      dataType="i8"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[retweet_count]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[retweet_count]"
-                      name="retweet_count" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[text]"
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[task_id]"
                       dataType="nText"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[text]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[text]"
-                      name="text" />
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[task_id]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[task_id]"
+                      name="task_id" />
                     <outputColumn
-                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[userid]"
-                      dataType="i8"
-                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[userid]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[userid]"
-                      name="userid" />
+                      refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[task_sn]"
+                      dataType="nText"
+                      externalMetadataColumnId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].ExternalColumns[task_sn]"
+                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[task_sn]"
+                      name="task_sn" />
                     <outputColumn
                       refId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
@@ -536,7 +632,7 @@
                 <property
                   dataType="System.String"
                   description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                  name="FastLoadOptions">TABLOCK</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
@@ -566,7 +662,7 @@
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[text]" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[id]"
-                      cachedDataType="i8"
+                      cachedDataType="nText"
                       cachedName="id"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[id]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[id]" />
@@ -584,7 +680,7 @@
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[_id]" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[date]"
-                      cachedDataType="nText"
+                      cachedDataType="dbTimeStamp"
                       cachedName="date"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[date]"
                       lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[date]" />
@@ -617,49 +713,49 @@
                       cachedDataType="nText"
                       cachedName="place.bounding_box.type"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.bounding_box.type]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.bounding_box.type]" />
+                      lineageId="Package\Data Flow Task\112:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[place.country]"
                       cachedDataType="nText"
                       cachedName="place.country"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.country]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.country]" />
+                      lineageId="Package\Data Flow Task\113:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[place.country_code]"
                       cachedDataType="nText"
                       cachedName="place.country_code"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.country_code]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.country_code]" />
+                      lineageId="Package\Data Flow Task\114:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[place.full_name]"
                       cachedDataType="nText"
                       cachedName="place.full_name"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.full_name]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.full_name]" />
+                      lineageId="Package\Data Flow Task\115:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[place.id]"
                       cachedDataType="nText"
                       cachedName="place.id"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.id]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.id]" />
+                      lineageId="Package\Data Flow Task\116:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[place.name]"
                       cachedDataType="nText"
                       cachedName="place.name"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.name]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.name]" />
+                      lineageId="Package\Data Flow Task\117:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[place.place_type]"
                       cachedDataType="nText"
                       cachedName="place.place_type"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.place_type]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.place_type]" />
+                      lineageId="Package\Data Flow Task\118:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[place.url]"
                       cachedDataType="nText"
                       cachedName="place.url"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[place.url]"
-                      lineageId="Package\Data Flow Task\ODBC Source 1.Outputs[ODBC Source Output].Columns[place.url]" />
+                      lineageId="Package\Data Flow Task\119:invalid" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[reply_count]"
                       cachedDataType="i8"
@@ -677,7 +773,7 @@
                     isUsed="True">
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[id]"
-                      dataType="i8"
+                      dataType="nText"
                       name="id" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[userid]"
@@ -693,7 +789,7 @@
                       name="_id" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[date]"
-                      dataType="nText"
+                      dataType="dbTimeStamp"
                       name="date" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[favorite_count]"
@@ -751,6 +847,30 @@
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[retweet_count]"
                       dataType="i8"
                       name="retweet_count" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[source]"
+                      dataType="nText"
+                      name="source" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[hashtags]"
+                      dataType="nText"
+                      name="hashtags" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[crawling_date]"
+                      dataType="dbTimeStamp"
+                      name="crawling_date" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[mentions]"
+                      dataType="nText"
+                      name="mentions" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[task_id]"
+                      dataType="nText"
+                      name="task_id" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[task_sn]"
+                      dataType="nText"
+                      name="task_sn" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
@@ -814,7 +934,7 @@
     design-time-name="Package\Data Flow Task">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="171,42"
           Id="Package\Data Flow Task\OLE DB Destination"
@@ -854,7 +974,9 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="-109.5,52,16,16"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
